@@ -1,15 +1,17 @@
-# api_integration/external_llm_api.py
-
 from fastapi import APIRouter
-from inter_llm.ollama_bridge import OllamaBridge
+import requests
 
 router = APIRouter()
 
-@router.post("/ollama/sentiment")
-def analyze_sentiment(text: str, model: str = "llama3"):
-    ollama = OllamaBridge(model=model)
-    result = ollama.query(f"Analyze emotional sentiment of this message: {text}")
-    return {"model_used": model, "sentiment": result}
-@router.post("/ollama/sentiment")
-def analyze_sentiment(text: str, model: str = "llama3"):
-    ...
+OLLAMA_URL = "http://localhost:11434/api/generate"
+MODEL_NAME = "llama3"  # หรือ lfm2-1.2b ที่พี่ติดตั้ง
+
+@router.post("/ollama/chat")
+def ollama_chat(prompt: str):
+    payload = {
+        "model": MODEL_NAME,
+        "prompt": prompt,
+        "stream": False
+    }
+    response = requests.post(OLLAMA_URL, json=payload)
+    return response.json()
