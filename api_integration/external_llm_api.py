@@ -6,7 +6,7 @@ from inter_llm.ollama_bridge import OllamaBridge
 router = APIRouter()
 
 @router.post("/ollama/sentiment")
-def analyze_with_ollama(text: str):
-    ollama = OllamaBridge(model="llama3")
-    result = ollama.query(f"Analyze emotional sentiment: '{text}'")
-    return {"ollama_sentiment": result}
+def analyze_sentiment(text: str, model: str = "llama3"):
+    ollama = OllamaBridge(model=model)
+    result = ollama.query(f"Analyze emotional sentiment of this message: {text}")
+    return {"model_used": model, "sentiment": result}
