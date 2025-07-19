@@ -1,0 +1,16 @@
+// creator_only/cosmic_emergency.proto
+
+syntax = "proto3";
+
+message EmergencySignal {
+  string origin = 1;
+  string timestamp = 2;
+  string cause = 3;
+  string universe_scope = 4;
+}
+
+message DharmaOverride {
+  bool activate = 1;
+  string initiated_by = 2;
+  string method = 3;
+}
