@@ -2,6 +2,8 @@ fastapi
 uvicorn
 requests
 openai
+pydantic
+python-dotenv
 transformers
 langchain
 google-cloud-storage
