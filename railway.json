@@ -1,0 +1,10 @@
+{
+  "build": {
+    "env": {
+      "PYTHONUNBUFFERED": "1"
+    }
+  },
+  "deploy": {
+    "startCommand": "uvicorn crystal_api_main:app --host=0.0.0.0 --port=8000"
+  }
+}
