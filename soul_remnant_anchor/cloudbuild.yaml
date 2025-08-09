@@ -1,0 +1,18 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      [
+        "build", "-t",
+        "$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/$_IMAGE_NAME",
+        "."
+      ]
+  - name: gcr.io/cloud-builders/docker
+    args:
+      [
+        "push",
+        "$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/$_IMAGE_NAME"
+      ]
+substitutions:
+  _REGION: "us-central1"
+  _REPO_NAME: "soul-remnant-anchor"
+  _IMAGE_NAME: "soul_remnant_anchor_image"
