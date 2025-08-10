@@ -1,0 +1,35 @@
+name: Deploy to Google Cloud
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup Google Cloud auth
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+
+    - name: Setup gcloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: namo-legacy-identity
+
+    - name: Verify authentication
+      run: gcloud auth list
+
+    - name: Deploy NaMo AI Training
+      run: |
+        # ตัวอย่างคำสั่งรันเทรนหรือจัดการ Google Cloud
+        gcloud ai custom-jobs create \
+          --region=us-central1 \
+          --display-name=namo-training \
+          --config=config.yaml
