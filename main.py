@@ -1,3 +1,5 @@
+from gcp_integration import init_gcp_credentials, gcp_status_check
+
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import Optional, Any
@@ -22,3 +24,7 @@ app.include_router(ai_router, prefix="/ai")
 app.include_router(multiverse_router, prefix="/multiverse")
 app.include_router(github_mcp_router, prefix="/github")
 app.include_router(llm_router, prefix="/llm")
+
+if __name__ == "__main__":
+    init_gcp_credentials("PATH/TO/namo-legacy-identity-f6acd4af5ea0.json", "namo-legacy-identity")
+    print("[GCP Status]", gcp_status_check())
