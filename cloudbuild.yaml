@@ -1,23 +1,23 @@
 steps:
-  # Step 1: Build container image
+  # Step 1: Build Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/namo-cosmic-ai-framework', '.']
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest', '.']
 
-  # Step 2: Push container to Google Container Registry
+  # Step 2: Push image ไป Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/namo-cosmic-ai-framework']
+    args: ['push', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest']
 
-  # Step 3: Deploy to Cloud Run
+  # Step 3: Deploy ไป Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
-      - run
-      - deploy
-      - namo-cosmic-ai-framework
-      - --image=gcr.io/$PROJECT_ID/namo-cosmic-ai-framework
-      - --region=asia-southeast1
-      - --platform=managed
-      - --allow-unauthenticated
+      [
+        'run', 'deploy', 'namoserver',
+        '--image', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest',
+        '--region', 'asia-southeast1',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
 
 images:
-  - gcr.io/$PROJECT_ID/namo-cosmic-ai-framework
+  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest'
