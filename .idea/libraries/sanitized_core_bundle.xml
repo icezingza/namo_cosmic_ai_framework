@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sanitized_core_bundle">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/sanitized_core_bundle.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
