@@ -1,0 +1,48 @@
+{
+  "repo": {
+    "git_url": "https://github.com/icezingza/namo_cosmic_ai_framework.git",
+    "default_branch": "main"
+  },
+  "cloud_run": {
+    "hello_service_url": "https://hello-185116032835.asia-southeast1.run.app/",
+    "region": "asia-southeast1"
+  },
+  "gcp_service_accounts": [
+    {
+      "type": "service_account",
+      "project_id": "arctic-signer-471822-i8",
+      "client_email": "namokey@arctic-signer-471822-i8.iam.gserviceaccount.com",
+      "client_id": "113790016450832943660",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/namokey%40arctic-signer-471822-i8.iam.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    },
+    {
+      "type": "service_account",
+      "project_id": "arctic-signer-471822-i8",
+      "client_email": "firebase-adminsdk-fbsvc@arctic-signer-471822-i8.iam.gserviceaccount.com",
+      "client_id": "113209340743203253965",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40arctic-signer-471822-i8.iam.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    },
+    {
+      "type": "service_account",
+      "project_id": "namo-legacy-identity",
+      "client_email": "firebase-adminsdk-fbsvc@namo-legacy-identity.iam.gserviceaccount.com",
+      "client_id": "116027999380124152617",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40namo-legacy-identity.iam.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    }
+  ],
+  "notes": [
+    "Sensitive keys intentionally omitted. Rotate any exposed keys and prefer Workload Identity Federation for CI/CD."
+  ]
+}

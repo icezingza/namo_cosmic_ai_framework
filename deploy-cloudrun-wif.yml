@@ -1,0 +1,59 @@
+name: Deploy to Cloud Run (WIF, no keys)
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}        # e.g. arctic-signer-471822-i8
+  REGION: ${{ vars.GCP_REGION || 'asia-southeast1' }}
+  SERVICE: ${{ vars.CLOUD_RUN_SERVICE || 'hello' }}
+  REPO_NAME: ${{ vars.ARTIFACT_REPO || 'namo' }}
+  IMAGE: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE }}:${{ github.sha }}
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write   # needed for WIF
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Auth to GCP via WIF
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}  # e.g. projects/123/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}       # e.g. run-deployer@arctic-signer-471822-i8.iam.gserviceaccount.com
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Enable services (first run only, ignore if already enabled)
+        run: |
+          gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com --project "$PROJECT_ID"
+
+      - name: Ensure Artifact Registry repo exists (idempotent)
+        run: |
+          gcloud artifacts repositories create "$REPO_NAME" \
+            --repository-format=docker \
+            --location="$REGION" \
+            --description="Container repo for Cloud Run" \
+            --project "$PROJECT_ID" || echo "Repo exists"
+
+      - name: Configure Docker auth
+        run: gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+
+      - name: Build with Cloud Build and push
+        run: |
+          gcloud builds submit --tag "$IMAGE" --project "$PROJECT_ID"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "$SERVICE" \
+            --image "$IMAGE" \
+            --region "$REGION" \
+            --project "$PROJECT_ID" \
+            --platform managed \
+            --allow-unauthenticated
