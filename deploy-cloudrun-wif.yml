@@ -49,21 +49,11 @@ jobs:
         run: |
           gcloud builds submit --tag "$IMAGE" --project "$PROJECT_ID"
 
-      - name: Resolve Cloud Run service URL
-        id: resolve-service-url
-        run: |
-          PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')
-          SERVICE_URL="https://${SERVICE}-${PROJECT_NUMBER}.${REGION}.run.app"
-          echo "SERVICE_URL=$SERVICE_URL" >> "$GITHUB_ENV"
-
       - name: Deploy to Cloud Run
-        env:
-          SERVICE_URL: ${{ env.SERVICE_URL }}
         run: |
           gcloud run deploy "$SERVICE" \
             --image "$IMAGE" \
             --region "$REGION" \
             --project "$PROJECT_ID" \
             --platform managed \
-            --allow-unauthenticated \
-            --set-env-vars "SERVER_URL=${SERVICE_URL}"
+            --allow-unauthenticated

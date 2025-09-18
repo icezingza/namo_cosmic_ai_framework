@@ -7,20 +7,18 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest']
 
-  # Step 3: Deploy ไป Cloud Run พร้อมคำนวณ URL สำหรับ SERVER_URL
+  # Step 3: Deploy ไป Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
+    entrypoint: gcloud
     args:
-      - '-c'
-      - |
-        PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')
-        SERVICE_URL="https://hello-${PROJECT_NUMBER}.asia-southeast1.run.app"
-        gcloud run deploy hello \
-          --image asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest \
-          --region asia-southeast1 \
-          --platform managed \
-          --allow-unauthenticated \
-          --set-env-vars "SERVER_URL=${SERVICE_URL}"
+      [
+        'run', 'deploy', 'hello',
+        '--image', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest',
+        '--region', 'asia-southeast1',
+        '--platform', 'managed',
+        '--allow-unauthenticated',
+        '--set-env-vars=SERVER_URL=https://hello-185116032835.asia-southeast1.run.app'
+      ]
 
 images:
   - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest'
