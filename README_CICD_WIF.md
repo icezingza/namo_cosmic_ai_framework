@@ -19,8 +19,6 @@ bash scripts/setup_wif.sh
   - `CLOUD_RUN_SERVICE` = `hello`
   - `ARTIFACT_REPO` = `namo`
 
-3) Push โค้ดขึ้น branch `main` → Action จะ build image (Cloud Build) และ deploy ไป Cloud Run อัตโนมัติ พร้อมตั้งค่า
-   env `SERVER_URL` ไปยังโดเมนของ Cloud Run (`https://hello-<PROJECT_NUMBER>.asia-southeast1.run.app`) เพื่อให้
-   FastAPI docs ชี้ URL ภายนอกถูกต้อง
+3) Push โค้ดขึ้น branch `main` → Action จะ build image (Cloud Build) และ deploy ไป Cloud Run อัตโนมัติ
 
 > หมายเหตุ: ครั้งแรกอาจต้อง enable APIs; workflow ทำให้แล้วแบบ idempotent
