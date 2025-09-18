@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from core_modules.memory import FirestoreMemory
 from typing import List, Dict, Any
 import vertexai
-from vertexai.generative_models import GenerativeModel, Part
+from vertexai.generative_models import Content, GenerativeModel, Part
 
 # --- Vertex AI Configuration ---
 PROJECT_ID = "arctic-signer-471822-i8"
@@ -15,20 +15,32 @@ vertexai.init(project=PROJECT_ID, location=LOCATION)
 
 router = APIRouter()
 
-def format_history_for_gemini(history: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+def format_history_for_gemini(history: List[Dict[str, Any]]) -> List[Content]:
     """
-    Maps the role from our Firestore format ('user'/'ai') 
-    to what the Gemini API expects ('user'/'model').
+    Maps the role from our Firestore format ('user'/'ai') to the Gemini API format
+    and converts each message into a ``Content`` instance.
     """
-    formatted_messages = []
+
+    formatted_messages: List[Content] = []
     for msg in history:
         role = msg.get("role")
-        content = msg.get("content")
+        text = msg.get("content")
+
+        if text is None:
+            continue
+
+        text = str(text).strip()
+        if not text:
+            continue
+
         if role == "ai":
-            # Gemini expects the model's role to be 'model'
-            formatted_messages.append({"role": "model", "content": content})
-        elif role == "user":
-            formatted_messages.append({"role": "user", "content": content})
+            role = "model"
+        elif role not in {"user", "model"}:
+            # Skip messages that do not have a recognized role.
+            continue
+
+        formatted_messages.append(Content(role=role, parts=[Part.from_text(text)]))
+
     return formatted_messages
 
 # NOTE: The path is kept as /ollama/chat to avoid breaking the existing Custom GPT Action.
