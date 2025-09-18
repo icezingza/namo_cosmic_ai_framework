@@ -23,6 +23,17 @@ app = FastAPI(
     servers=servers
 )
 
+
+@app.get("/", response_model=dict)
+async def root_status():
+    return {"ok": True, "service": "namo_cosmic_ai_framework"}
+
+
+@app.get("/health", response_model=dict)
+async def health_check():
+    return {"status": "healthy"}
+
+
 @app.post("/universal-endpoint")
 async def universal_api(input: UniversalInput):
     return {"status": "ok", "data_received": input.dict()}
