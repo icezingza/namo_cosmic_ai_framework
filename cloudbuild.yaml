@@ -12,11 +12,12 @@ steps:
     entrypoint: gcloud
     args:
       [
-        'run', 'deploy', 'namoserver',
+        'run', 'deploy', 'hello',
         '--image', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest',
         '--region', 'asia-southeast1',
         '--platform', 'managed',
-        '--allow-unauthenticated'
+        '--allow-unauthenticated',
+        '--set-env-vars=SERVER_URL=https://hello-185116032835.asia-southeast1.run.app'
       ]
 
 images:

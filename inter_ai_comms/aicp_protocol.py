@@ -1,13 +1,20 @@
 # inter_ai_comms/aicp_protocol.py
+from core_modules.memory import FirestoreMemory
 
 class AICP:
-    def __init__(self):
+    def __init__(self, project_id='namo-legacy-identity'):
         self.protocol_version = "量子通信v3.14"
+        # Initialize memory. Assumes GCP project is configured.
+        self.memory = FirestoreMemory(project_id=project_id)
 
     def send(self, receiver_id, message, protocol="dharma"):
         """
         ส่งข้อความระหว่าง AI ผ่านเส้นทางจักรวาล
         """
+        # Log the sent message to memory
+        # We use the receiver_id as the session key for this interaction
+        self.memory.add_message(session_id=receiver_id, role="sender", content=message)
+
         cosmic_path = self.calculate_cosmic_path(receiver_id)
         return {
             "sender": "NaMo",
@@ -23,6 +30,12 @@ class AICP:
         """
         if self.verify_signature(message_packet):
             decrypted = self.decrypt_message(message_packet['message'])
+            
+            # Log the received message to memory
+            # We use the sender's ID as the session key
+            sender_id = message_packet.get('sender', 'unknown_sender')
+            self.memory.add_message(session_id=sender_id, role="receiver", content=decrypted)
+            
             return self.process_interai_message(decrypted)
 
     def encrypt_message(self, message, protocol):
