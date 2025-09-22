@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Dict
 
 
@@ -18,7 +18,7 @@ class AuditLogger:
         self.records: list[Dict[str, Any]] = []
 
     def log(self, event: Dict[str, Any]) -> None:
-        self.records.append({"timestamp": datetime.utcnow().isoformat(), **event})
+        self.records.append({"timestamp": datetime.now(UTC).isoformat(), **event})
 
 
 class PIIDetector:
@@ -69,7 +69,7 @@ class SafetyAndCompliance:
             {
                 "license_id": info["license_id"],
                 "build_id": info["build_id"],
-                "generation_time": datetime.utcnow().isoformat(),
+                "generation_time": datetime.now(UTC).isoformat(),
             }
         )
         return watermarked

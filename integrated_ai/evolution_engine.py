@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Dict, List, Optional
 
 from .memory_core import InfinityMemorySystem
@@ -110,7 +110,7 @@ class InfinityEvolutionEngine:
             context=context_payload,
             response=response,
             score=score,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
         )
         self.evolution_buffer.append(record)
         return {"response": response, "memory_id": memory_result["memory_id"]}
@@ -135,7 +135,7 @@ class InfinityEvolutionEngine:
             {
                 "version": version,
                 "policy": new_policy,
-                "timestamp": datetime.utcnow(),
+                "timestamp": datetime.now(UTC),
                 "metrics_before": self.metrics_tracker.current_metrics(),
             }
         )
@@ -145,7 +145,7 @@ class InfinityEvolutionEngine:
     def log_evolution(self, insights: Dict[str, Any], policy: Dict[str, Any]) -> None:
         self.evolution_logs.append(
             {
-                "timestamp": datetime.utcnow(),
+                "timestamp": datetime.now(UTC),
                 "policy_version": self.current_policy_version,
                 "insights": insights,
                 "policy_changes": policy,

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from math import sqrt
 from typing import Dict, Iterable, List, Tuple
 
@@ -45,7 +45,7 @@ class QuantumEmotionTagger:
         memory.emotion_tag = tags
         memory.emotion_intensity = intensities
         memory.emotion_shift_trace.append(
-            EmotionShift(timestamp=datetime.utcnow(), emotions=dict(intensities), trigger="initial_analysis").__dict__
+            EmotionShift(timestamp=datetime.now(UTC), emotions=dict(intensities), trigger="initial_analysis").__dict__
         )
         return memory
 
@@ -92,7 +92,7 @@ class EmotionGraph:
                 continue
             similarity = self._calculate_emotional_similarity(emotions, other_data["emotions"])
             if similarity >= 0.7:
-                self.edges[(memory_id, other_id)] = {"similarity": similarity, "created": datetime.utcnow()}
+                self.edges[(memory_id, other_id)] = {"similarity": similarity, "created": datetime.now(UTC)}
                 connections.append(other_id)
         return connections
 
