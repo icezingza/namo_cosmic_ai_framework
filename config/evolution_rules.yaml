@@ -1,0 +1,12 @@
+learning:
+  policy_update_interval: hourly
+  safe_exploration: true
+  evaluation_metrics:
+    - reliability
+    - safety
+    - user_satisfaction
+
+rollout:
+  canary_percentage: 10
+  auto_rollback: true
+  monitoring_window_minutes: 60

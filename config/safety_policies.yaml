@@ -1,0 +1,12 @@
+content_moderation:
+  level: strict
+  prohibited_categories:
+    - violence
+    - hate
+    - harassment
+  escalation_contact: security-team@example.com
+
+access_control:
+  authentication_required: true
+  multi_factor_auth: true
+  session_timeout_minutes: 30
