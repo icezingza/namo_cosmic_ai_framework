@@ -1,4 +1,4 @@
-# namo_cosmic_ai_framework
+# namo_cosmic_ai_framework01
 
 > โครงสร้าง/ชุดเครื่องมือสำหรับงาน AI เชิงสถาปัตย์ (core modules + API integrations) พร้อม CI/Tests/Docs เริ่มต้น
 
