@@ -17,22 +17,26 @@ class FirestoreMemory:
                                                   If not provided, it will try to use environment variables.
             project_id (str, optional): The GCP project ID.
         """
+        # Use project_id as the app name to allow for multiple, isolated connections.
+        # If no project_id is given, it will use the default app.
+        app_name = project_id or firebase_admin.DEFAULT_APP_NAME
+
         try:
-            # Check if the app is already initialized
-            firebase_admin.get_app()
+            # Try to get an already initialized app with this name.
+            app = firebase_admin.get_app(name=app_name)
         except ValueError:
-            # If not initialized, initialize it
+            # If the app doesn't exist, initialize it.
+            cred = None
+            options = {'projectId': project_id} if project_id else {}
+
             if service_account_path and os.path.exists(service_account_path):
                 cred = credentials.Certificate(service_account_path)
-                firebase_admin.initialize_app(cred)
-            elif project_id:
-                 firebase_admin.initialize_app(options={'projectId': project_id})
-            else:
-                # Attempt to initialize with default credentials from the environment
-                # This is common in Cloud Run, Cloud Functions, etc.
-                firebase_admin.initialize_app()
+
+            # Initialize the app with a specific name.
+            app = firebase_admin.initialize_app(cred, options, name=app_name)
         
-        self.db = firestore.client()
+        # Get the Firestore client for the specific, named app.
+        self.db = firestore.client(app=app)
 
     def add_message(self, session_id: str, role: str, content: str) -> None:
         """
