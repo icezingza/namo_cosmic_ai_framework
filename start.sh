@@ -6,7 +6,7 @@ RUNTIME="${APP_RUNTIME:-python}"
 
 case "$RUNTIME" in
   python)
-    exec uvicorn main:app --host 0.0.0.0 --port "$PORT"
+    exec uvicorn crystal_api_main:app --host 0.0.0.0 --port "$PORT"
     ;;
   *)
     echo "Unsupported APP_RUNTIME: $RUNTIME" >&2

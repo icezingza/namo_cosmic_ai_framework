@@ -8,32 +8,29 @@ class FirestoreMemory:
     """
     A class to handle conversation memory using Google Firestore.
     """
-    def __init__(self, service_account_path: str = None, project_id: str = None):
+    def __init__(self, project_id: str):
         """
-        Initializes the Firestore client.
+        Initializes the Firestore client using Application Default Credentials (ADC).
 
         Args:
-            service_account_path (str, optional): Path to the GCP service account JSON file.
-                                                  If not provided, it will try to use environment variables.
-            project_id (str, optional): The GCP project ID.
+            project_id (str): The GCP project ID. This is used to ensure
+                              connections are isolated and explicit.
         """
+        if not project_id:
+            raise ValueError("A project_id is required to initialize FirestoreMemory.")
+
         # Use project_id as the app name to allow for multiple, isolated connections.
-        # If no project_id is given, it will use the default app.
-        app_name = project_id or firebase_admin.DEFAULT_APP_NAME
+        app_name = project_id
 
         try:
             # Try to get an already initialized app with this name.
             app = firebase_admin.get_app(name=app_name)
         except ValueError:
             # If the app doesn't exist, initialize it.
-            cred = None
-            options = {'projectId': project_id} if project_id else {}
-
-            if service_account_path and os.path.exists(service_account_path):
-                cred = credentials.Certificate(service_account_path)
-
-            # Initialize the app with a specific name.
-            app = firebase_admin.initialize_app(cred, options, name=app_name)
+            # ADC will be used automatically when `credentials` is not specified.
+            # This is the standard for Cloud Run, Cloud Functions, etc.
+            options = {'projectId': project_id}
+            app = firebase_admin.initialize_app(None, options, name=app_name)
         
         # Get the Firestore client for the specific, named app.
         self.db = firestore.client(app=app)
