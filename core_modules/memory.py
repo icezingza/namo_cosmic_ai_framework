@@ -45,8 +45,7 @@ class FirestoreMemory:
             content (str): The content of the message.
         """
         if not session_id or not role or not content:
-            print("Error: session_id, role, and content cannot be empty.")
-            return
+            raise ValueError("session_id, role, and content cannot be empty.")
 
         session_ref = self.db.collection('chat_sessions').document(session_id)
         messages_ref = session_ref.collection('messages')
