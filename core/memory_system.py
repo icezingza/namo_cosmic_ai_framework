@@ -67,7 +67,7 @@ class EmotionalSpectrum:
     def get_dominant_emotion(self) -> Tuple[str, float]:
         """Return the dominant emotion and its intensity."""
 
-        emotions = asdict(self)
+        emotions = self.to_dict()
         if not emotions:
             return "neutral", 0.0
         dominant = max(emotions.items(), key=lambda item: item[1])
