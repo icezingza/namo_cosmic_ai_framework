@@ -1,24 +1,29 @@
 steps:
   # Step 1: Build Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest', '.']
+    args:
+      - build
+      - '-t'
+      - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-nexus/web'
+      - '.'
 
-  # Step 2: Push image ไป Artifact Registry
+  # Step 2: Push Docker image ไป Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest']
+    args:
+      - push
+      - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-nexus/web'
 
-  # Step 3: Deploy ไป Cloud Run
+  # Step 3: Deploy ไปที่ Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
-      [
-        'run', 'deploy', 'hello',
-        '--image', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest',
-        '--region', 'asia-southeast1',
-        '--platform', 'managed',
-        '--allow-unauthenticated',
-        '--set-env-vars=SERVER_URL=https://hello-185116032835.asia-southeast1.run.app'
-      ]
+      - run
+      - deploy
+      - namo-nexus-web
+      - --image=asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-nexus/web
+      - --region=asia-southeast1
+      - --platform=managed
+      - --allow-unauthenticated
 
 images:
-  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-repo/namoserver:latest'
+  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-nexus/web'

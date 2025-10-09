@@ -1,8 +1,66 @@
+# Core AI & ML
+numpy>=1.21.0
+pandas>=1.3.0
+scikit-learn>=1.0.0
+torch>=1.9.0
+transformers>=4.15.0
+sentence-transformers>=2.0.0
+faiss-cpu>=1.7.0
+
+# Database & Storage
+chromadb>=0.4.0
+redis>=4.0.0
+sqlalchemy>=1.4.0
+psycopg2-binary>=2.9.0
+elasticsearch>=7.15.0
+pymongo>=4.0.0
+
+# API & Web Framework
+fastapi>=0.68.0
+uvicorn>=0.15.0
+websockets>=10.0
+pydantic>=1.8.0
+gunicorn>=20.0.0
+
+# Monitoring & Observability
+prometheus-client>=0.12.0
+grafana-api>=1.0.0
+jaeger-client>=4.4.0
+opentelemetry-api>=1.0.0
+psutil>=5.8.0
+GPUtil>=1.4.0
+
+# Cloud & Deployment
+kubernetes>=21.0.0
+docker>=5.0.0
+boto3>=1.20.0
+google-cloud-storage>=2.0.0
+
+# Security
+cryptography>=3.4.0
+bcrypt>=3.2.0
+python-jose>=3.3.0
+passlib>=1.7.4
+
+# Utilities
+python-dotenv>=0.19.0
+click>=8.0.0
+rich>=10.0.0
+tqdm>=4.62.0
+celery>=5.0.0
+
+# Testing & Development
+pytest>=6.0.0
+pytest-asyncio>=0.15.0
+pytest-cov>=3.0.0
+pytest-benchmark>=3.4.0
+black>=21.0.0
+mypy>=0.910
+pre-commit>=2.15.0
+
+# Existing project dependencies
 requests
 google-cloud-firestore
-fastapi
-uvicorn[standard]
-google-cloud-storage
 google-cloud-secret-manager
 firebase-admin
 google-cloud-aiplatform

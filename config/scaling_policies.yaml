@@ -1,0 +1,16 @@
+horizontal_scaling:
+  enabled: true
+  max_replicas: 20
+  metrics:
+    cpu_utilization: 70
+    memory_utilization: 80
+    requests_per_second: 1000
+
+vertical_scaling:
+  enabled: true
+  max_memory_gb: 64
+  max_cpu_cores: 16
+
+cooldowns:
+  scale_up_seconds: 120
+  scale_down_seconds: 300
