@@ -1,0 +1,159 @@
+system:
+  name: "Infinity AI Framework"
+  version: "2.0.0"
+  environment: "production"
+  debug: false
+  log_level: "INFO"
+  timezone: "Asia/Bangkok"
+
+memory:
+  storage_backend: "chromadb"
+  max_memories: 10000000
+  auto_cleanup: true
+  cleanup_threshold: 0.85
+  retention_policy: "adaptive"
+  cache_size: "2GB"
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  vector_dimensions: 384
+
+scaling:
+  auto_scaling: true
+  max_shards: 100
+  shard_size: 100000
+  replication_factor: 3
+  backup_interval: "6h"
+  min_instances: 2
+  max_instances: 50
+  target_cpu_utilization: 70
+  target_memory_utilization: 80
+  scaling_cooldown: 300
+  horizontal:
+    enabled: true
+    max_replicas: 20
+    metrics:
+      - type: "cpu"
+        value: 70
+      - type: "memory"
+        value: 80
+      - type: "custom"
+        name: "requests_per_second"
+        value: 1000
+
+disaster_recovery:
+  enabled: true
+  backup_strategy: "multi_region"
+  recovery_time_objective: "4h"
+  recovery_point_objective: "15m"
+  automated_failover: true
+
+backup:
+  frequency: "6h"
+  retention: "30d"
+  encryption: true
+  verification: true
+
+emotion:
+  detection_confidence_threshold: 0.75
+  intensity_calculation_method: "hybrid"
+  emotional_spectrum_enabled: true
+  max_emotion_tags: 15
+  cultural_adaptation: true
+  realtime_analysis: true
+
+advanced_analysis:
+  sentiment_depth: "deep"
+  emotional_context_window: 10
+  cross_cultural_adaptation: true
+  personality_factor_integration: true
+
+safety:
+  pii_detection_enabled: true
+  ethical_guidelines_enforced: true
+  content_moderation_level: "strict"
+  auto_block_threshold: 0.85
+  realtime_monitoring: true
+  threat_detection: true
+
+advanced_security:
+  behavioral_analysis: true
+  anomaly_detection: true
+  threat_intelligence_feeds: true
+  compliance_automation: true
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_origins:
+    - "https://yourdomain.com"
+    - "http://localhost:3000"
+  rate_limit_requests: 1000
+  rate_limit_period: "minute"
+  api_timeout: 30
+  max_request_size: "10MB"
+  security:
+    authentication_required: true
+    jwt_expiration_hours: 24
+    api_key_rotation_days: 90
+    ssl_required: true
+
+monitoring:
+  metrics_enabled: true
+  log_level: "INFO"
+  health_check_interval: 30
+  alert_channel: "webhook"
+  performance_tracing: true
+  business_metrics: true
+
+advanced_monitoring:
+  distributed_tracing: true
+  realtime_analytics: true
+  predictive_alerting: true
+  capacity_forecasting: true
+
+database:
+  main:
+    dialect: "postgresql"
+    host: "localhost"
+    port: 5432
+    database: "infinity_ai"
+    username: "infinity_user"
+    password: "secure_password"
+    pool_size: 20
+    max_overflow: 30
+  vector:
+    type: "chromadb"
+    path: "./data/vector_store"
+    persistence: true
+    compression: true
+  cache:
+    type: "redis"
+    host: "localhost"
+    port: 6379
+    db: 0
+    password: "redis_password"
+    max_connections: 50
+  backup:
+    enabled: true
+    interval: "24h"
+    retention_days: 30
+    encryption: true
+
+evolution:
+  self_improvement_enabled: true
+  policy_update_interval: "hourly"
+  ab_testing_enabled: true
+  canary_deployment_percentage: 10
+  auto_rollback: true
+
+advanced_evolution:
+  multi_objective_optimization: true
+  safe_exploration: true
+  transfer_learning: true
+  meta_learning: true
+
+cost_optimization:
+  enabled: true
+  budget_alert_threshold: 0.8
+  auto_scaling_optimization: true
+  resource_rightsizing: true
+  spot_instance_usage: true
