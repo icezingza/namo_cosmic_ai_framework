@@ -54,6 +54,23 @@ class TestFirestoreMemory(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "A project_id is required"):
             FirestoreMemory(project_id="")
 
+    @patch('core_modules.memory.firestore')
+    @patch('core_modules.memory.firebase_admin')
+    def test_add_message_requires_parameters(self, mock_firebase_admin, mock_firestore):
+        """
+        Tests that add_message raises ValueError for empty inputs.
+        """
+        memory = FirestoreMemory(project_id="test-project")
+
+        with self.assertRaisesRegex(ValueError, "session_id, role, and content cannot be empty"):
+            memory.add_message(session_id="", role="user", content="Hello")
+
+        with self.assertRaisesRegex(ValueError, "session_id, role, and content cannot be empty"):
+            memory.add_message(session_id="test", role="", content="Hello")
+
+        with self.assertRaisesRegex(ValueError, "session_id, role, and content cannot be empty"):
+            memory.add_message(session_id="test", role="user", content="")
+
 
 if __name__ == '__main__':
     unittest.main()
