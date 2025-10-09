@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
-PORT="${PORT:-8080}"
 RUNTIME="${APP_RUNTIME:-python}"
+MODULE="${APP_MODULE:-main:app}"
 
 case "$RUNTIME" in
-  python)
-    exec uvicorn crystal_api_main:app --host 0.0.0.0 --port "$PORT"
+  python|uvicorn)
+    exec uvicorn "$MODULE"
     ;;
   *)
     echo "Unsupported APP_RUNTIME: $RUNTIME" >&2

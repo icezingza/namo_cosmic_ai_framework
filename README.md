@@ -22,6 +22,11 @@ source .venv/bin/activate
 # ติดตั้ง Dependencies
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
+# ตัวอย่างรัน (ปรับตาม entrypoint จริงของโปรเจกต์)
+python crystal_api_main.py  # หรือ uvicorn app:app --reload
+
+# หรือใช้สคริปต์ `start.sh` (รองรับการกำหนด runtime/module ผ่าน env var)
+APP_RUNTIME=python APP_MODULE=main:app ./start.sh
 ```
 
 ### 2. ตั้งค่า Google Cloud Authentication
@@ -47,26 +52,13 @@ GCP_PROJECT_ID="YOUR_PROJECT_ID"
 uvicorn crystal_api_main:app --reload --port 8000
 ```
 
-เมื่อเซิร์ฟเวอร์ทำงานแล้ว คุณสามารถเข้าถึง API ได้ที่ `http://127.0.0.1:8000`
-
-## API Documentation
-เอกสาร API จะถูกสร้างขึ้นโดยอัตโนมัติโดย FastAPI:
--   **Swagger UI:** `http://127.0.0.1:8000/docs`
--   **ReDoc:** `http://127.0.0.1:8000/redoc`
-
-## Docker
-ในการรันด้วย Docker คุณต้องส่ง Environment Variable เข้าไปใน Container
-```bash
-# 1. Build the image
-docker build -t cosmic/memory-service:latest .
-
-# 2. Run the container
-docker run --rm -p 8000:8000 \
-  -e GCP_PROJECT_ID="YOUR_PROJECT_ID" \
-  --name memory_service \
-  cosmic/memory-service:latest
-```
-**หมายเหตุ:** สำหรับการใช้งานบน Docker ที่ไม่ได้รันบน GCP environment, คุณอาจต้อง Mount Service Account Key file และตั้งค่า `GOOGLE_APPLICATION_CREDENTIALS` environment variable เพิ่มเติม
+## Env Vars
+คัดลอกจาก `.env.example` ใส่ค่าเริ่มต้น:
+- `APP_ENV=dev`
+- `APP_PORT=8000`
+- `APP_RUNTIME=python` — เลือกรันผ่าน `uvicorn` (ค่าตั้งต้น)
+- `APP_MODULE=main:app` — ระบุโมดูล FastAPI (แก้ได้ตามโครงสร้างจริง)
+- เพิ่มคีย์อื่นที่โมดูลของพี่ใช้จริง (เช่น API keys)
 
 ## Makefile
 -   `make setup` — ติดตั้ง dev tools + pre-commit
