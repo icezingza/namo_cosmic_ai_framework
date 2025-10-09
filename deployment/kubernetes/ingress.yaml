@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: infinity-ai-ingress
+  namespace: infinity
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: infinity.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: infinity-ai-service
+                port:
+                  number: 8000
+  tls:
+    - hosts:
+        - infinity.example.com
+      secretName: infinity-ai-tls

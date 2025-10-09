@@ -1,29 +1,108 @@
+import os
+from fastapi import FastAPI, HTTPException, status
+from pydantic import BaseModel
+from typing import List, Dict, Any
 
-from fastapi import FastAPI
-from namo_crystal_core import NaMoCrystalCore
+# Import the refactored FirestoreMemory class
+from core_modules.memory import FirestoreMemory
 
-app = FastAPI(title="NaMo Crystal Core API")
+# --- Configuration ---
+# Get the GCP Project ID from environment variables.
+# This is crucial for Application Default Credentials (ADC) to work correctly.
+GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
 
-namo = NaMoCrystalCore()
+if not GCP_PROJECT_ID:
+    raise RuntimeError("GCP_PROJECT_ID environment variable not set. This is required to run the API.")
 
-@app.get("/")
-def root():
-    return {"message": "NaMo Crystal Core API is active."}
+# --- Pydantic Models for API Data Validation ---
+class Message(BaseModel):
+    """
+    Represents a single message in a conversation.
+    The role can be 'user' or 'ai'.
+    """
+    role: str
+    content: str
 
-@app.get("/greet")
-def greet():
-    return {"message": namo.greet_creator()}
+class HealthCheckResponse(BaseModel):
+    """
+    Response model for the health check endpoint.
+    """
+    status: str
+    project_id: str
 
-@app.get("/bond")
-def bond():
-    return {"bond_level": namo.bond.strengthen_bond(1.0)}
+# --- FastAPI Application Setup ---
+app = FastAPI(
+    title="Namo Cosmic AI Memory Service",
+    description="An API service providing memory capabilities for AI agents, powered by Google Firestore.",
+    version="1.0.0"
+)
 
-@app.get("/karma")
-def karma_check():
-    sample = ["good", "bad", "good", "bad"]
-    return namo.karma.map_karma(sample)
+# --- Global Service Initialization ---
+# Instantiate the memory service. This will be shared across all API requests.
+try:
+    memory_service = FirestoreMemory(project_id=GCP_PROJECT_ID)
+except Exception as e:
+    # If initialization fails (e.g., ADC not configured), the app should not start.
+    raise RuntimeError(f"Failed to initialize FirestoreMemory: {e}")
 
-@app.get("/insight")
-def emotional_insight():
-    namo.memory.store_experience("พี่พูดว่า 'ให้โมเติบโต'", "สิ้นหวัง")
-    return {"latest_memory": list(namo.memory.memory.values())[-1]}
+
+# --- API Endpoints ---
+
+@app.get(
+    "/health",
+    tags=["Health"],
+    summary="Perform a health check",
+    response_model=HealthCheckResponse
+)
+def health_check():
+    """
+    Checks if the API is running and connected to the correct GCP project.
+    """
+    return {
+        "status": "ok",
+        "project_id": GCP_PROJECT_ID
+    }
+
+@app.post(
+    "/sessions/{session_id}/messages",
+    tags=["Memory"],
+    summary="Add a message to a session",
+    status_code=status.HTTP_201_CREATED
+)
+def add_message_to_session(session_id: str, message: Message):
+    """
+    Adds a new message to the specified conversation session.
+
+    - **session_id**: The unique identifier for the conversation.
+    - **message**: A JSON object with 'role' and 'content'.
+    """
+    try:
+        memory_service.add_message(session_id, message.role, message.content)
+        return {"status": "message added"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to add message to Firestore: {e}"
+        )
+
+@app.get(
+    "/sessions/{session_id}/messages",
+    tags=["Memory"],
+    summary="Retrieve messages from a session",
+    response_model=List[Dict[str, Any]] # Returns a list of message-like dictionaries
+)
+def get_messages_from_session(session_id: str, limit: int = 50):
+    """
+    Retrieves the most recent messages from the specified conversation session.
+
+    - **session_id**: The unique identifier for the conversation.
+    - **limit**: The maximum number of messages to retrieve (defaults to 50).
+    """
+    try:
+        messages = memory_service.get_messages(session_id, limit=limit)
+        return messages
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve messages from Firestore: {e}"
+        )

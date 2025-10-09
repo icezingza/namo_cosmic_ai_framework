@@ -1,0 +1,11 @@
+backup:
+  frequency: 6h
+  retention_days: 30
+  encryption: true
+  verification: true
+  offsite_replication: true
+
+recovery:
+  recovery_time_objective: 4h
+  recovery_point_objective: 15m
+  automated_failover: true
