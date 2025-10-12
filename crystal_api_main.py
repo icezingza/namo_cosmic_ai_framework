@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Dict, Any
 
@@ -38,12 +38,18 @@ app = FastAPI(
 )
 
 # --- Global Service Initialization ---
-# Instantiate the memory service. This will be shared across all API requests.
-try:
-    memory_service = FirestoreMemory(project_id=GCP_PROJECT_ID)
-except Exception as e:
-    # If initialization fails (e.g., ADC not configured), the app should not start.
-    raise RuntimeError(f"Failed to initialize FirestoreMemory: {e}")
+# This function will act as a dependency to provide the memory service.
+def get_memory_service():
+    try:
+        # This part will be executed once per request that depends on it.
+        # For a more complex setup, you might initialize this once at startup.
+        yield FirestoreMemory(project_id=GCP_PROJECT_ID)
+    except Exception as e:
+        # If initialization fails, raise an HTTPException to be handled by FastAPI.
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Failed to initialize FirestoreMemory: {e}"
+        )
 
 
 # --- API Endpoints ---
@@ -69,7 +75,11 @@ def health_check():
     summary="Add a message to a session",
     status_code=status.HTTP_201_CREATED
 )
-def add_message_to_session(session_id: str, message: Message):
+def add_message_to_session(
+    session_id: str,
+    message: Message,
+    memory_service: FirestoreMemory = Depends(get_memory_service)
+):
     """
     Adds a new message to the specified conversation session.
 
@@ -91,13 +101,22 @@ def add_message_to_session(session_id: str, message: Message):
     summary="Retrieve messages from a session",
     response_model=List[Dict[str, Any]] # Returns a list of message-like dictionaries
 )
-def get_messages_from_session(session_id: str, limit: int = 50):
+def get_messages_from_session(
+    session_id: str,
+    limit: int = 50,
+    memory_service: FirestoreMemory = Depends(get_memory_service)
+):
     """
     Retrieves the most recent messages from the specified conversation session.
 
     - **session_id**: The unique identifier for the conversation.
     - **limit**: The maximum number of messages to retrieve (defaults to 50).
     """
+    if limit < 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The 'limit' parameter must be a positive integer."
+        )
     try:
         messages = memory_service.get_messages(session_id, limit=limit)
         return messages
