@@ -1,4 +1,3 @@
-
 import firebase_admin
 from firebase_admin import firestore
 from typing import List, Dict, Any
@@ -8,11 +7,32 @@ class FirestoreMemory:
     A class to handle conversation memory using Google Firestore.
     Assumes firebase_admin has been initialized elsewhere.
     """
-    def __init__(self):
+    def __init__(self, project_id: str):
         """
-        Initializes the Firestore client.
+        Initializes the Firestore client using Application Default Credentials (ADC).
+
+        Args:
+            project_id (str): The GCP project ID. This is used to ensure
+                              connections are isolated and explicit.
         """
-        self.db = firestore.client()
+        if not project_id:
+            raise ValueError("A project_id is required to initialize FirestoreMemory.")
+
+        # Use project_id as the app name to allow for multiple, isolated connections.
+        app_name = project_id
+
+        try:
+            # Try to get an already initialized app with this name.
+            app = firebase_admin.get_app(name=app_name)
+        except ValueError:
+            # If the app doesn't exist, initialize it.
+            # ADC will be used automatically when `credentials` is not specified.
+            # This is the standard for Cloud Run, Cloud Functions, etc.
+            options = {'projectId': project_id}
+            app = firebase_admin.initialize_app(None, options, name=app_name)
+        
+        # Get the Firestore client for the specific, named app.
+        self.db = firestore.client(app=app)
 
     def add_message(self, session_id: str, role: str, content: str) -> None:
         """
@@ -24,8 +44,7 @@ class FirestoreMemory:
             content (str): The content of the message.
         """
         if not session_id or not role or not content:
-            print("Error: session_id, role, and content cannot be empty.")
-            return
+            raise ValueError("session_id, role, and content cannot be empty.")
 
         session_ref = self.db.collection('chat_sessions').document(session_id)
         messages_ref = session_ref.collection('messages')
@@ -91,4 +110,3 @@ if __name__ == '__main__':
             print(f"- [{msg.get('role')}] {msg.get('content')} (at {msg.get('timestamp')})")
     else:
         print("Could not retrieve messages. Make sure Firestore is set up correctly.")
-

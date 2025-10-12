@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from core_modules.memory import FirestoreMemory
 from typing import List, Dict, Any
 import vertexai
-from vertexai.generative_models import GenerativeModel, Part
+from vertexai.generative_models import Content, GenerativeModel, Part
 import os
 
 # --- Vertex AI Configuration ---
@@ -13,21 +13,32 @@ MODEL_NAME = "gemini-1.5-pro-preview-0409"
 
 router = APIRouter()
 
+def format_history_for_gemini(history: List[Dict[str, Any]]) -> List[Content]:
+    """
+    Maps the role from our Firestore format ('user'/'ai') to the Gemini API format
+    and converts each message into a ``Content`` instance.
+    """
 
-def format_history_for_gemini(history: List[Dict[str, Any]]) -> List[Dict[str, str]]:
-    """
-    Maps the role from our Firestore format ('user'/'ai') 
-    to what the Gemini API expects ('user'/'model').
-    """
-    formatted_messages = []
+    formatted_messages: List[Content] = []
     for msg in history:
         role = msg.get("role")
-        content = msg.get("content")
+        text = msg.get("content")
+
+        if text is None:
+            continue
+
+        text = str(text).strip()
+        if not text:
+            continue
+
         if role == "ai":
-            # Gemini expects the model's role to be 'model'
-            formatted_messages.append({"role": "model", "content": content})
-        elif role == "user":
-            formatted_messages.append({"role": "user", "content": content})
+            role = "model"
+        elif role not in {"user", "model"}:
+            # Skip messages that do not have a recognized role.
+            continue
+
+        formatted_messages.append(Content(role=role, parts=[Part.from_text(text)]))
+
     return formatted_messages
 
 
@@ -48,7 +59,7 @@ def chat_with_gemini_and_memory(prompt: str, session_id: str):
         # 2. Initialize Vertex AI and Memory inside the endpoint
         # This prevents crashes on startup.
         vertexai.init(project=project_id, location=LOCATION)
-        memory = FirestoreMemory()
+        memory = FirestoreMemory(project_id=project_id)
 
         # 3. Save the user's new message to Firestore
         memory.add_message(session_id=session_id, role="user", content=prompt)

@@ -1,0 +1,12 @@
+{
+  "title": "Infinity AI Overview",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Request Rate",
+      "targets": [
+        {"expr": "sum(rate(infinity_memory_created_total[5m]))"}
+      ]
+    }
+  ]
+}
