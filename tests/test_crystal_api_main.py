@@ -78,3 +78,25 @@ def test_add_message(client, mock_memory_service):
     assert response.json() == {"status": "message added"}
     # Verify the mocked service was called correctly
     mock_memory_service.add_message.assert_called_once_with("test-session", "user", "test message")
+
+
+def test_get_messages_does_not_leak_timestamps(client, mock_memory_service):
+    """
+    Tests that the get_messages endpoint does not leak internal fields like 'timestamp'.
+    It should only return fields defined in the `Message` Pydantic model.
+    """
+    # Configure the mock to return data that includes an extra field
+    mock_memory_service.get_messages.return_value = [
+        {"role": "user", "content": "hello", "timestamp": "2023-01-01T12:00:00Z"}
+    ]
+
+    response = client.get("/sessions/test-session/messages")
+
+    assert response.status_code == 200
+
+    # The response should NOT contain the 'timestamp' field
+    response_data = response.json()
+    assert len(response_data) == 1
+    assert "role" in response_data[0]
+    assert "content" in response_data[0]
+    assert "timestamp" not in response_data[0]
