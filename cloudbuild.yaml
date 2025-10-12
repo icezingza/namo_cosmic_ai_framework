@@ -4,26 +4,27 @@ steps:
     args:
       - build
       - '-t'
-      - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-nexus/web'
+      - 'gcr.io/$PROJECT_ID/namo-cosmic-ai'
       - '.'
 
-  # Step 2: Push Docker image ไป Artifact Registry
+  # Step 2: Push Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - push
-      - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-nexus/web'
+      - 'gcr.io/$PROJECT_ID/namo-cosmic-ai'
 
-  # Step 3: Deploy ไปที่ Cloud Run
+  # Step 3: Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - run
       - deploy
-      - namo-nexus-web
-      - --image=asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-nexus/web
+      - namo-cosmic-ai
+      - --image=gcr.io/$PROJECT_ID/namo-cosmic-ai
       - --region=asia-southeast1
       - --platform=managed
       - --allow-unauthenticated
+      - '--set-env-vars=APP_MODULE=crystal_api_main:app,GCP_PROJECT_ID=$PROJECT_ID'
 
 images:
-  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/namo-nexus/web'
+  - 'gcr.io/$PROJECT_ID/namo-cosmic-ai'
