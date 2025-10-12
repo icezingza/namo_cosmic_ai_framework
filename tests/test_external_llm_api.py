@@ -42,6 +42,7 @@ external_llm_api = importlib.import_module("api_integration.external_llm_api")
 
 
 def test_chat_with_gemini_and_memory_builds_content_history(monkeypatch):
+    monkeypatch.setenv("GCP_PROJECT", "test-project")
     base_history = [
         {"role": "user", "content": "Hello"},
         {"role": "ai", "content": "Hi there"},
