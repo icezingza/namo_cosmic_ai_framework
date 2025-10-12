@@ -1,37 +1,17 @@
 
-import os
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import firestore
 from typing import List, Dict, Any
 
 class FirestoreMemory:
     """
     A class to handle conversation memory using Google Firestore.
+    Assumes firebase_admin has been initialized elsewhere.
     """
-    def __init__(self, service_account_path: str = None, project_id: str = None):
+    def __init__(self):
         """
         Initializes the Firestore client.
-
-        Args:
-            service_account_path (str, optional): Path to the GCP service account JSON file.
-                                                  If not provided, it will try to use environment variables.
-            project_id (str, optional): The GCP project ID.
         """
-        try:
-            # Check if the app is already initialized
-            firebase_admin.get_app()
-        except ValueError:
-            # If not initialized, initialize it
-            if service_account_path and os.path.exists(service_account_path):
-                cred = credentials.Certificate(service_account_path)
-                firebase_admin.initialize_app(cred)
-            elif project_id:
-                 firebase_admin.initialize_app(options={'projectId': project_id})
-            else:
-                # Attempt to initialize with default credentials from the environment
-                # This is common in Cloud Run, Cloud Functions, etc.
-                firebase_admin.initialize_app()
-        
         self.db = firestore.client()
 
     def add_message(self, session_id: str, role: str, content: str) -> None:

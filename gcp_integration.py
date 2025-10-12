@@ -1,57 +1,71 @@
 import os
 from google.cloud import storage, firestore, secretmanager
 
-# ตั้งค่าไฟล์คีย์ Service Account
-def init_gcp_credentials(key_path: str, project_id: str):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = key_path
-    global PROJECT_ID
-    PROJECT_ID = project_id
-    print(f"[NaMo GCP] Credentials set for project: {PROJECT_ID}")
+# Get project ID from environment variables, essential for GCP services
+PROJECT_ID = os.getenv("GCP_PROJECT")
+
+# Initialize clients globally to reuse connections
+storage_client = storage.Client(project=PROJECT_ID)
+firestore_client = firestore.Client(project=PROJECT_ID)
+secret_manager_client = secretmanager.SecretManagerServiceClient()
 
 # ---------------- Google Cloud Storage ----------------
 def list_gcs_buckets():
-    client = storage.Client(project=PROJECT_ID)
-    buckets = list(client.list_buckets())
+    """Lists all GCS buckets in the project."""
+    buckets = list(storage_client.list_buckets())
     return [bucket.name for bucket in buckets]
 
 def upload_to_gcs(bucket_name: str, source_file: str, destination_blob: str):
-    client = storage.Client(project=PROJECT_ID)
-    bucket = client.bucket(bucket_name)
+    """Uploads a file to a GCS bucket."""
+    bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob)
     blob.upload_from_filename(source_file)
     return f"Uploaded {source_file} to gs://{bucket_name}/{destination_blob}"
 
 # ---------------- Firestore ----------------
 def list_firestore_collections():
-    db = firestore.Client(project=PROJECT_ID)
-    collections = list(db.collections())
+    """Lists all top-level collections in Firestore."""
+    collections = list(firestore_client.collections())
     return [col.id for col in collections]
 
 def add_firestore_document(collection_name: str, data: dict):
-    db = firestore.Client(project=PROJECT_ID)
-    doc_ref = db.collection(collection_name).document()
+    """Adds a document to a Firestore collection."""
+    doc_ref = firestore_client.collection(collection_name).document()
     doc_ref.set(data)
     return f"Document added to {collection_name} with ID: {doc_ref.id}"
 
 # ---------------- Secret Manager ----------------
 def access_secret(secret_id: str, version_id: str = "latest"):
-    client = secretmanager.SecretManagerServiceClient()
+    """Accesses a secret from Secret Manager."""
+    if not PROJECT_ID:
+        raise ValueError("GCP_PROJECT environment variable not set.")
     name = f"projects/{PROJECT_ID}/secrets/{secret_id}/versions/{version_id}"
-    response = client.access_secret_version(name=name)
+    response = secret_manager_client.access_secret_version(name=name)
     return response.payload.data.decode("UTF-8")
 
 # ---------------- Integration Entry ----------------
 def gcp_status_check():
+    """Checks the status of GCP services by listing GCS buckets."""
     try:
+        # Ensure project ID is available
+        if not PROJECT_ID:
+            return {"error": "GCP_PROJECT environment variable is not set."}
+        
         buckets = list_gcs_buckets()
         return {
             "project": PROJECT_ID,
+            "status": "ok",
             "buckets": buckets
         }
     except Exception as e:
         return {"error": str(e)}
 
 if __name__ == "__main__":
-    # ตัวอย่างการใช้งาน
-    init_gcp_credentials("PATH/TO/namo-legacy-identity-f6acd4af5ea0.json", "namo-legacy-identity")
-    print(gcp_status_check())
+    # This block is for local testing and won't run in Cloud Run.
+    # To test locally, ensure you've set the GCP_PROJECT environment variable
+    # and authenticated with `gcloud auth application-default login`.
+    if not PROJECT_ID:
+        print("Please set the GCP_PROJECT environment variable.")
+    else:
+        print(f"[NaMo GCP] Running status check for project: {PROJECT_ID}")
+        print(gcp_status_check())
