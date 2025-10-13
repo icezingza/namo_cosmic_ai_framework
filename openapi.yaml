@@ -48,6 +48,7 @@ paths:
     get:
       summary: Health check
       description: Returns service status.
+      operationId: get_health
       responses:
         "200":
           description: OK
@@ -61,6 +62,7 @@ paths:
                     example: "ok"
 
 components:
+  schemas: {}
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
