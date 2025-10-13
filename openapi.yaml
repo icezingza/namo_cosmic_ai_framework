@@ -3,8 +3,8 @@ info:
   title: NaMo Omega Cosmic AI Framework
   version: 1.0.0
   description: >
-    The NaMo Omega AI Framework exposes intelligent endpoints for blueprint generation,
-    AI orchestration, and cosmic intelligence synchronization.
+    The NaMo Omega AI Framework exposes intelligent endpoints for
+    blueprint generation, AI orchestration, and cosmic intelligence synchronization.
 
 servers:
   - url: https://namo-omega-185116032835.asia-southeast1.run.app
@@ -15,7 +15,8 @@ paths:
     post:
       summary: Query the Cosmic Intelligence Core
       description: >
-        Send a text query to NaMo Omega AI to get insight, reasoning, or blueprint recommendations.
+        Send a text query to NaMo Omega AI to get insight, reasoning,
+        or blueprint recommendations.
       operationId: post_cosmic_intelligence
       requestBody:
         required: true
@@ -59,10 +60,20 @@ paths:
                 properties:
                   status:
                     type: string
-                    example: "ok"
+                    example: ok
 
 components:
-  schemas: {}
+  schemas:
+    BasicResponse:
+      type: object
+      properties:
+        response:
+          type: string
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
