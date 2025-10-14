@@ -1,41 +1,26 @@
 # syntax=docker/dockerfile:1
 
-# Stage: build Python environment
-FROM python:3.11-slim AS python-builder
+# Use a standard Python slim image that includes a shell and build tools.
+FROM python:3.11-slim
 
-ENV VENV_PATH=/opt/venv
-
-RUN python -m venv ${VENV_PATH} \
-    && ${VENV_PATH}/bin/pip install --upgrade pip
-
-ENV PATH="${VENV_PATH}/bin:${PATH}"
-
+# Set the working directory in the container
 WORKDIR /app
 
+# Copy the requirements file first to leverage Docker cache
 COPY requirements.txt ./
 
-RUN pip install --no-cache-dir --upgrade wheel setuptools \
+# Install dependencies
+RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-# Optional Node stage can be added here if a package.json exists in the project root.
-# FROM node:20-slim AS node-builder
-# WORKDIR /app
-# COPY package*.json ./
-# RUN npm install --production
-# COPY . .
-# RUN npm run build
-# The build output should then be copied from /app/dist (or similar) to /opt/node in the final stage.
-
-FROM gcr.io/distroless/python3-debian12
-
-ENV PATH="/opt/venv/bin:${PATH}"
-WORKDIR /app
-
-COPY --from=python-builder /opt/venv /opt/venv
-COPY --from=python-builder /bin/bash /bin/bash
-
+# Copy the rest of the application source code
 COPY . .
 
+# Make the startup script executable
+RUN chmod +x ./start.sh
+
+# Expose the port the app runs on
 EXPOSE 8080
 
+# Set the command to run the application
 CMD ["./start.sh"]

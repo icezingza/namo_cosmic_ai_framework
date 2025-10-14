@@ -1,12 +1,11 @@
-
-import os
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import firestore
 from typing import List, Dict, Any
 
 class FirestoreMemory:
     """
     A class to handle conversation memory using Google Firestore.
+    Assumes firebase_admin has been initialized elsewhere.
     """
     def __init__(self, project_id: str):
         """
@@ -111,4 +110,3 @@ if __name__ == '__main__':
             print(f"- [{msg.get('role')}] {msg.get('content')} (at {msg.get('timestamp')})")
     else:
         print("Could not retrieve messages. Make sure Firestore is set up correctly.")
-

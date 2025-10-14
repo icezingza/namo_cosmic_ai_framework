@@ -133,7 +133,7 @@ def add_message_to_session(
     "/sessions/{session_id}/messages",
     tags=["Memory"],
     summary="Retrieve messages from a session",
-    response_model=List[Dict[str, Any]] # Returns a list of message-like dictionaries
+    response_model=List[Message]
 )
 def get_messages_from_session(
     session_id: str,

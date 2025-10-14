@@ -1,0 +1,84 @@
+openapi: 3.1.0
+info:
+  title: NaMo Omega Cosmic AI Framework
+  version: 1.0.0
+  description: >
+    The NaMo Omega AI Framework exposes intelligent endpoints for
+    blueprint generation, AI orchestration, and cosmic intelligence synchronization.
+
+servers:
+  - url: https://namo-omega-185116032835.asia-southeast1.run.app
+    description: Production server
+
+paths:
+  /cosmic-intelligence:
+    post:
+      summary: Query the Cosmic Intelligence Core
+      description: >
+        Send a text query to NaMo Omega AI to get insight, reasoning,
+        or blueprint recommendations.
+      operationId: post_cosmic_intelligence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: User input or question
+                context:
+                  type: string
+                  description: Optional additional context
+              required:
+                - query
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    description: AI-generated answer
+
+  /health:
+    get:
+      summary: Health check
+      description: Returns service status.
+      operationId: get_health
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+components:
+  schemas:
+    BasicResponse:
+      type: object
+      properties:
+        response:
+          type: string
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+
+security:
+  - ApiKeyAuth: []

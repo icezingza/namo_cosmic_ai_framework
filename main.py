@@ -1,8 +1,22 @@
-from gcp_integration import init_gcp_credentials, gcp_status_check
+from gcp_integration import gcp_status_check
 import os
+import firebase_admin
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import Optional, Any, List, Dict
+
+# --- Firebase Admin SDK Initialization ---
+# Ensure this runs only once at startup.
+project_id = os.getenv("GCP_PROJECT")
+if project_id:
+    try:
+        firebase_admin.get_app()
+    except ValueError:
+        firebase_admin.initialize_app(options={'projectId': project_id})
+    print(f"[NaMo GCP] Firebase App initialized for project: {project_id}")
+else:
+    print("[NaMo GCP] WARNING: GCP_PROJECT environment variable not set. Firebase not initialized.")
+# ----------------------------------------
 
 # --- Dynamic Server URL for OpenAPI Spec ---
 # This allows the OpenAPI documentation to correctly point to our public ngrok URL

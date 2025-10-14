@@ -31,5 +31,4 @@ jobs:
         # ตัวอย่างคำสั่งรันเทรนหรือจัดการ Google Cloud
         gcloud ai custom-jobs create \
           --region=us-central1 \
-          --display-name=namo-training \
           --config=config.yaml

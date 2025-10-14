@@ -1,11 +1,12 @@
 # inter_ai_comms/aicp_protocol.py
 from core_modules.memory import FirestoreMemory
+import os
 
 class AICP:
-    def __init__(self, project_id='namo-legacy-identity'):
+    def __init__(self):
         self.protocol_version = "量子通信v3.14"
-        # Initialize memory. Assumes GCP project is configured.
-        self.memory = FirestoreMemory(project_id=project_id)
+        # Initialize memory. Assumes firebase_admin is already initialized.
+        self.memory = FirestoreMemory()
 
     def send(self, receiver_id, message, protocol="dharma"):
         """
