@@ -60,12 +60,14 @@ def test_same_memory_instance_is_used_across_requests(client_and_mock):
     # Replace the app's dependency with our capturing function
     app.dependency_overrides[get_memory_service] = capture_id_dependency
 
-    # Make two separate requests to any endpoint that uses the dependency
-    client.post("/sessions/test-session-1/messages", json={"role": "user", "content": "First call"})
-    client.post("/sessions/test-session-2/messages", json={"role": "user", "content": "Second call"})
+    try:
+        # Make two separate requests to any endpoint that uses the dependency
+        client.post("/sessions/test-session-1/messages", json={"role": "user", "content": "First call"})
+        client.post("/sessions/test-session-2/messages", json={"role": "user", "content": "Second call"})
 
-    # Assert that only one unique object ID was captured, proving it's a singleton
-    assert len(instance_ids) == 1
+        # Assert that only one unique object ID was captured, proving it's a singleton
+        assert len(instance_ids) == 1
 
-    # Clean up the dependency override after the test
-    del app.dependency_overrides[get_memory_service]
+    finally:
+        # Clean up the dependency override after the test
+        del app.dependency_overrides[get_memory_service]
