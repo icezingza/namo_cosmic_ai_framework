@@ -1,7 +1,8 @@
 import os
+from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException, status
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 # Import the refactored FirestoreMemory class
 from core_modules.memory import FirestoreMemory
@@ -30,26 +31,59 @@ class HealthCheckResponse(BaseModel):
     status: str
     project_id: str
 
+# --- Application State and Lifespan Management ---
+# This dictionary will hold our shared service instance.
+app_state: Dict[str, Any] = {}
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Manages the application's lifespan. This is the recommended way to handle
+    startup and shutdown events in modern FastAPI.
+    """
+    # --- Startup ---
+    print("INFO:     Starting up and initializing Firestore client...")
+    try:
+        # Initialize the FirestoreMemory service once and store it in the app state.
+        app_state["memory_service"] = FirestoreMemory(project_id=GCP_PROJECT_ID)
+        print("INFO:     Firestore client initialized successfully.")
+    except Exception as e:
+        # If initialization fails, log the error and prevent the app from starting.
+        print(f"ERROR:    Failed to initialize FirestoreMemory: {e}")
+        # In a real-world scenario, you might want to exit or handle this more gracefully.
+        raise RuntimeError(f"Could not initialize Firestore client: {e}") from e
+
+    yield
+
+    # --- Shutdown ---
+    # No explicit shutdown actions are needed for the Firestore client, but this
+    # is where you would put cleanup logic (e.g., closing database connections).
+    print("INFO:     Shutting down application.")
+    app_state.clear()
+
+
 # --- FastAPI Application Setup ---
 app = FastAPI(
     title="Namo Cosmic AI Memory Service",
     description="An API service providing memory capabilities for AI agents, powered by Google Firestore.",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan  # Register the lifespan context manager
 )
 
-# --- Global Service Initialization ---
-# This function will act as a dependency to provide the memory service.
-def get_memory_service():
-    try:
-        # This part will be executed once per request that depends on it.
-        # For a more complex setup, you might initialize this once at startup.
-        yield FirestoreMemory(project_id=GCP_PROJECT_ID)
-    except Exception as e:
-        # If initialization fails, raise an HTTPException to be handled by FastAPI.
+# --- Dependency Injection for Service ---
+def get_memory_service() -> FirestoreMemory:
+    """
+    Dependency to get the shared FirestoreMemory service instance.
+    This function now simply retrieves the pre-initialized instance from the app_state.
+    """
+    memory_service = app_state.get("memory_service")
+    if not memory_service:
+        # This should theoretically not happen if the lifespan event completes successfully.
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Failed to initialize FirestoreMemory: {e}"
+            detail="Memory service is not available. The application might be starting up or has failed to initialize."
         )
+    return memory_service
 
 
 # --- API Endpoints ---
