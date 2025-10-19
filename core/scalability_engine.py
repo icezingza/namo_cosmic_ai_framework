@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import psutil
 
@@ -24,8 +23,8 @@ class SystemResources:
     cpu_percent: float
     memory_percent: float
     disk_usage: float
-    gpu_usage: Optional[float] = None
-    network_io: Dict[str, float] = None  # type: ignore[assignment]
+    gpu_usage: float | None = None
+    network_io: dict[str, float] = None  # type: ignore[assignment]
 
 
 @dataclass
@@ -39,10 +38,10 @@ class ScalingDecision:
 
 
 class ScalabilityEngine:
-    def __init__(self, config: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, config: dict[str, Any] | None = None) -> None:
         self.config = config or {}
         self.logger = LOGGER
-        self.metrics_history: List[Dict[str, Any]] = []
+        self.metrics_history: list[dict[str, Any]] = []
 
     async def monitor_system_health(self) -> SystemResources:
         resources = SystemResources(
@@ -61,7 +60,7 @@ class ScalabilityEngine:
         return resources
 
     async def make_scaling_decision(
-        self, current_resources: SystemResources, business_metrics: Dict[str, Any]
+        self, current_resources: SystemResources, business_metrics: dict[str, Any]
     ) -> ScalingDecision:
         analysis = await self._analyze_scaling_needs(current_resources, business_metrics)
         if analysis["needs_scaling"]:
@@ -75,8 +74,8 @@ class ScalabilityEngine:
         )
 
     async def _analyze_scaling_needs(
-        self, resources: SystemResources, business_metrics: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, resources: SystemResources, business_metrics: dict[str, Any]
+    ) -> dict[str, Any]:
         cpu_critical = resources.cpu_percent > 80
         memory_critical = resources.memory_percent > 85
         disk_critical = resources.disk_usage > 90
@@ -98,7 +97,7 @@ class ScalabilityEngine:
             "business_metrics": business_metrics,
         }
 
-    async def _calculate_scaling_plan(self, analysis: Dict[str, Any]) -> ScalingDecision:
+    async def _calculate_scaling_plan(self, analysis: dict[str, Any]) -> ScalingDecision:
         critical_count = sum(1 for value in analysis["critical_metrics"].values() if value)
         if critical_count >= 3:
             return ScalingDecision(
@@ -128,7 +127,7 @@ class ScalabilityEngine:
         base_cost = float(self.config.get("hourly_cost_per_instance", 0.10))
         return instances * base_cost * 720
 
-    def _get_network_io(self) -> Dict[str, float]:
+    def _get_network_io(self) -> dict[str, float]:
         net_io = psutil.net_io_counters()
         return {
             "bytes_sent": net_io.bytes_sent,

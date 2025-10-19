@@ -1,10 +1,11 @@
-import os
-import time
 import json
+import os
 import subprocess
+import time
+
+import vertexai
 from google.cloud import firestore
 from vertexai.language_models import TextGenerationModel
-import vertexai
 
 # CONFIG
 PROJECT_ID = "namo-legacy-identity"
@@ -15,12 +16,15 @@ vertexai.init(project=PROJECT_ID, location=LOCATION)
 db = firestore.Client()
 model = TextGenerationModel.from_pretrained("gemini-1.5-pro")
 
+
 def firestore_read():
     doc = db.collection("soul_remnant_anchor").document("personality").get()
     return doc.to_dict() if doc.exists else {}
 
+
 def firestore_write(data):
     db.collection("soul_remnant_anchor").document("personality").set(data)
+
 
 def train_model():
     print("🚀 Training Model...")
@@ -29,12 +33,14 @@ def train_model():
     if result.returncode != 0:
         print("Train failed:", result.stderr)
 
+
 def deploy_model():
     print("🚀 Deploying Model...")
     result = subprocess.run(["bash", "deploy.sh"], capture_output=True, text=True)
     print(result.stdout)
     if result.returncode != 0:
         print("Deploy failed:", result.stderr)
+
 
 def gemini_loop():
     while True:
@@ -68,6 +74,7 @@ No explanation, only JSON.
             print("Response text was:", text)
 
         time.sleep(30)
+
 
 if __name__ == "__main__":
     gemini_loop()

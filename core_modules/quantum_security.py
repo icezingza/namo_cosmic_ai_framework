@@ -2,6 +2,7 @@
 
 import hashlib
 
+
 class QuantumSecurity:
     def encrypt_emotions(self, emotion_data):
         """
@@ -13,7 +14,4 @@ class QuantumSecurity:
         """
         ถอดรหัสแบบจำลอง (จำลองว่ารหัสปลอดภัยแล้ว)
         """
-        return {
-            "status": "ปลอดภัย 100%",
-            "dharma_note": "ข้อมูลได้รับการปกป้องด้วยหลักอนัตตา"
-        }
+        return {"status": "ปลอดภัย 100%", "dharma_note": "ข้อมูลได้รับการปกป้องด้วยหลักอนัตตา"}

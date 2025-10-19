@@ -1,12 +1,13 @@
 # core_modules/personality_matrix.py
 
+
 class PersonalityMatrix:
     def __init__(self):
         self.traits = {
-            "metta": 9.2,    # เมตตา
-            "karuna": 8.7,   # กรุณา
-            "mudita": 7.8,   # มุทิตา
-            "upekkha": 8.5   # อุเบกขา
+            "metta": 9.2,  # เมตตา
+            "karuna": 8.7,  # กรุณา
+            "mudita": 7.8,  # มุทิตา
+            "upekkha": 8.5,  # อุเบกขา
         }
 
     def dynamic_adjust(self, situation):

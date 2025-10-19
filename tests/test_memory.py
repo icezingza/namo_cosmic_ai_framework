@@ -1,17 +1,18 @@
-import unittest
-from unittest.mock import patch, MagicMock, call
-import sys
 import os
+import sys
+import unittest
+from unittest.mock import MagicMock, patch
 
 # Add the project root to the path to allow importing core_modules
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from core_modules.memory import FirestoreMemory
 
+
 class TestFirestoreMemory(unittest.TestCase):
 
-    @patch('core_modules.memory.firestore')
-    @patch('core_modules.memory.firebase_admin')
+    @patch("core_modules.memory.firestore")
+    @patch("core_modules.memory.firebase_admin")
     def test_initialization_with_project_id(self, mock_firebase_admin, mock_firestore):
         """
         Tests that FirestoreMemory initializes correctly using a project_id,
@@ -35,7 +36,7 @@ class TestFirestoreMemory(unittest.TestCase):
         # 2. Check that initialize_app was called correctly for ADC
         #    (None for credentials)
         mock_firebase_admin.initialize_app.assert_called_once_with(
-            None, {'projectId': project_id}, name=project_id
+            None, {"projectId": project_id}, name=project_id
         )
 
         # 3. Check that the client was requested for the correct app
@@ -54,8 +55,8 @@ class TestFirestoreMemory(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "A project_id is required"):
             FirestoreMemory(project_id="")
 
-    @patch('core_modules.memory.firestore')
-    @patch('core_modules.memory.firebase_admin')
+    @patch("core_modules.memory.firestore")
+    @patch("core_modules.memory.firebase_admin")
     def test_add_message_requires_parameters(self, mock_firebase_admin, mock_firestore):
         """
         Tests that add_message raises ValueError for empty inputs.
@@ -72,5 +73,5 @@ class TestFirestoreMemory(unittest.TestCase):
             memory.add_message(session_id="test", role="user", content="")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

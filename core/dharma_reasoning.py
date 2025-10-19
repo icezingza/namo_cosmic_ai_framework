@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
@@ -20,7 +19,7 @@ class DharmaReasoningEngine:
         "dharma": "Act in alignment with duty and ethics",
     }
 
-    def evaluate(self, situation: Dict[str, str]) -> DharmaDecision:
+    def evaluate(self, situation: dict[str, str]) -> DharmaDecision:
         context = situation.get("context", "")
         if "risk" in context.lower():
             principle = "ahimsa"

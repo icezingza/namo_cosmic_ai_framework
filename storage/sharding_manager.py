@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
@@ -18,7 +17,7 @@ class ShardingManager:
         self.max_shards = max_shards
         self.shard_size = shard_size
 
-    def plan_shards(self, total_items: int, replication_factor: int = 1) -> List[ShardPlan]:
+    def plan_shards(self, total_items: int, replication_factor: int = 1) -> list[ShardPlan]:
         shards_needed = min(self.max_shards, (total_items // self.shard_size) + 1)
         return [
             ShardPlan(shard_id=index, capacity=self.shard_size, replicas=replication_factor)

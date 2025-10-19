@@ -5,19 +5,19 @@ from __future__ import annotations
 import hashlib
 import re
 from datetime import UTC, datetime
-from typing import Any, Dict
+from typing import Any
 
 
 class LicenseManager:
-    def get_license_info(self) -> Dict[str, str]:
+    def get_license_info(self) -> dict[str, str]:
         return {"license_id": "NAMO-LIC-001", "build_id": "2024.01"}
 
 
 class AuditLogger:
     def __init__(self) -> None:
-        self.records: list[Dict[str, Any]] = []
+        self.records: list[dict[str, Any]] = []
 
-    def log(self, event: Dict[str, Any]) -> None:
+    def log(self, event: dict[str, Any]) -> None:
         self.records.append({"timestamp": datetime.now(UTC).isoformat(), **event})
 
 
@@ -38,7 +38,7 @@ class SafetyAndCompliance:
         self.audit_logger = AuditLogger()
         self.pii_detector = PIIDetector()
 
-    def check_compliance(self, content: str, context: Dict[str, Any]) -> Dict[str, bool]:
+    def check_compliance(self, content: str, context: dict[str, Any]) -> dict[str, bool]:
         return {
             "ethical_violation": self.check_ethical_violation(content),
             "pii_leakage": self.check_pii_leakage(content),
@@ -53,7 +53,7 @@ class SafetyAndCompliance:
     def check_pii_leakage(self, content: str) -> bool:
         return self.pii_detector.has_pii(content)
 
-    def check_safety_risk(self, content: str, context: Dict[str, Any]) -> bool:
+    def check_safety_risk(self, content: str, context: dict[str, Any]) -> bool:
         severity = context.get("severity", "low")
         flagged_terms = {"self-harm", "violence"}
         return severity == "high" or any(term in content.lower() for term in flagged_terms)
@@ -61,7 +61,7 @@ class SafetyAndCompliance:
     def check_license_compliance(self) -> bool:
         return True
 
-    def enforce_license(self, response: Dict[str, Any]) -> Dict[str, Any]:
+    def enforce_license(self, response: dict[str, Any]) -> dict[str, Any]:
         info = self.license_manager.get_license_info()
         watermarked = dict(response)
         watermarked.setdefault("metadata", {})
@@ -74,11 +74,11 @@ class SafetyAndCompliance:
         )
         return watermarked
 
-    def audit_log(self, event: Dict[str, Any]) -> None:
+    def audit_log(self, event: dict[str, Any]) -> None:
         pseudonymized = self.pseudonymize_event(event)
         self.audit_logger.log(pseudonymized)
 
-    def pseudonymize_event(self, event: Dict[str, Any]) -> Dict[str, Any]:
+    def pseudonymize_event(self, event: dict[str, Any]) -> dict[str, Any]:
         sanitized = dict(event)
         for field in ("user_id", "ip_address"):
             if field in sanitized:

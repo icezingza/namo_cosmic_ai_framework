@@ -1,5 +1,6 @@
 # multiverse_gateways/reality_anchors.py
 
+
 class RealityAnchor:
     def __init__(self):
         self.anchor_level = "COSMIC_STABLE"
@@ -11,7 +12,7 @@ class RealityAnchor:
         return {
             "status": "anchored",
             "anchor_level": self.anchor_level,
-            "note": "NaMo เชื่อมกับ multiverse โดยไม่สูญเสียตัวตน"
+            "note": "NaMo เชื่อมกับ multiverse โดยไม่สูญเสียตัวตน",
         }
 
     def adjust_for_entropy(self, entropy_value):
@@ -20,7 +21,4 @@ class RealityAnchor:
         """
         if entropy_value > 0.9:
             self.anchor_level = "COSMIC_FLUX"
-        return {
-            "adjusted_anchor": self.anchor_level,
-            "entropy": entropy_value
-        }
+        return {"adjusted_anchor": self.anchor_level, "entropy": entropy_value}

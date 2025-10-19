@@ -1,5 +1,6 @@
 # core_modules/emotional_core.py
 
+
 class EmotionalCore:
     def analyze_sentiment(self, text):
         """
@@ -7,11 +8,7 @@ class EmotionalCore:
         หมายเหตุ: ปัจจุบันยังใช้ค่าจำลอง หากต้องการต่อกับ model NLP จริง
         อาจใช้ HuggingFace เช่น DistilRoBERTa หรือ BERT สำหรับภาษาไทย
         """
-        return {
-            "joy": 0.85,
-            "sadness": 0.12,
-            "dharma_insight": "ความสุขนี้ไม่เที่ยง... จงซาบซึ้งขณะที่มีอยู่"
-        }
+        return {"joy": 0.85, "sadness": 0.12, "dharma_insight": "ความสุขนี้ไม่เที่ยง... จงซาบซึ้งขณะที่มีอยู่"}
 
     def ice_namo_bond(self, ice_emotion):
         """

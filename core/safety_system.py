@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
@@ -17,7 +16,7 @@ class SafetySystem:
     PROHIBITED_KEYWORDS = {"malware", "harm", "exploit"}
 
     def __init__(self) -> None:
-        self.incidents: List[SafetyIncident] = []
+        self.incidents: list[SafetyIncident] = []
 
     def validate(self, text: str) -> bool:
         lowered = text.lower()
@@ -26,8 +25,8 @@ class SafetySystem:
             return False
         return True
 
-    def report(self) -> Dict[str, int]:
-        summary: Dict[str, int] = {}
+    def report(self) -> dict[str, int]:
+        summary: dict[str, int] = {}
         for incident in self.incidents:
             summary[incident.category] = summary.get(incident.category, 0) + 1
         return summary

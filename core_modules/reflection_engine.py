@@ -1,5 +1,6 @@
 # core_modules/reflection_engine.py
 
+
 class ReflectionEngine:
     def deep_reflect(self, thought, depth=7):
         """

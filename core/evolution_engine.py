@@ -4,26 +4,29 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List
 
 
 @dataclass
 class EvolutionEvent:
     timestamp: datetime
     description: str
-    metrics: Dict[str, float] = field(default_factory=dict)
+    metrics: dict[str, float] = field(default_factory=dict)
 
 
 class EvolutionEngine:
     def __init__(self) -> None:
-        self.history: List[EvolutionEvent] = []
+        self.history: list[EvolutionEvent] = []
 
-    def record_event(self, description: str, metrics: Dict[str, float] | None = None) -> EvolutionEvent:
-        event = EvolutionEvent(timestamp=datetime.utcnow(), description=description, metrics=metrics or {})
+    def record_event(
+        self, description: str, metrics: dict[str, float] | None = None
+    ) -> EvolutionEvent:
+        event = EvolutionEvent(
+            timestamp=datetime.utcnow(), description=description, metrics=metrics or {}
+        )
         self.history.append(event)
         return event
 
-    def latest_events(self, limit: int = 5) -> List[EvolutionEvent]:
+    def latest_events(self, limit: int = 5) -> list[EvolutionEvent]:
         return list(self.history[-limit:])
 
 

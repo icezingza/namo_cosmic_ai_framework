@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 SAFE_MODES = {
     "teach": {"tone": "calm", "goal": "clarity"},
@@ -6,7 +6,8 @@ SAFE_MODES = {
     "reflect": {"tone": "gentle", "goal": "insight"},
 }
 
-def activate(name: str) -> Dict[str, Any]:
+
+def activate(name: str) -> dict[str, Any]:
     if name not in SAFE_MODES:
         raise ValueError("Unknown or unsafe mode")
     return {"mode": name, "profile": SAFE_MODES[name]}

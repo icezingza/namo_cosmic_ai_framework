@@ -1,7 +1,9 @@
 # inter_ai_comms/github_mcp_adapter.py
 
 import os
+
 import requests
+
 
 class GitHubMCPAdapter:
     def __init__(self):
@@ -13,7 +15,7 @@ class GitHubMCPAdapter:
         url = f"{self.api_url}/repos/{self.repo}/commits"
         headers = {"Authorization": f"token {self.token}"}
         response = requests.get(url, headers=headers)
-        return [commit['commit']['message'] for commit in response.json()]
+        return [commit["commit"]["message"] for commit in response.json()]
 
     def create_issue(self, title, body):
         url = f"{self.api_url}/repos/{self.repo}/issues"

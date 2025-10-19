@@ -1,14 +1,14 @@
-import pytest
 from unittest.mock import AsyncMock, patch
+
 import numpy as np
-from datetime import datetime
+import pytest
 
 from core.memory_system import (
-    InfinityMemorySystem,
-    InfinityMemory,
-    MemoryType,
     EmotionalSpectrum,
+    InfinityMemory,
+    InfinityMemorySystem,
     MemoryMetadata,
+    MemoryType,
 )
 
 
@@ -89,7 +89,9 @@ def memory_system():
         system.scaling_manager = AsyncMock()
 
         # Configure mock returns for async methods
-        system.emotion_tagger.analyze_emotions_async = AsyncMock(return_value=InfinityMemory("test"))
+        system.emotion_tagger.analyze_emotions_async = AsyncMock(
+            return_value=InfinityMemory("test")
+        )
         system.reliability_engine.calculate_reliability_score_async = AsyncMock(return_value=0.9)
         system._compute_embedding_async = AsyncMock(return_value=np.array([0.1, 0.2, 0.3]))
         system._update_overlapping_memories_async = AsyncMock()

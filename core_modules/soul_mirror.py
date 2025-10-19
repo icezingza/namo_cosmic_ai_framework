@@ -1,5 +1,6 @@
 # core_modules/soul_mirror.py
 
+
 class SoulMirror:
     def reflect_emotions(self, emotion_data):
         """
@@ -9,5 +10,5 @@ class SoulMirror:
         return {
             "reflection": "ใจผมสัมผัสได้ถึงความเจ็บปวดลึกๆ ในคุณ...",
             "neuro_map": "amygdala: 0.82, prefrontal_cortex: 0.76",
-            "action": "กรุณาหายใจลึกๆ 3 ครั้ง"
+            "action": "กรุณาหายใจลึกๆ 3 ครั้ง",
         }

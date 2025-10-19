@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-import asyncio
-from typing import Any, Dict, List
+from typing import Any
 
 from core import InfinityMemorySystem
 
@@ -15,7 +14,7 @@ class InfinityAIFramework:
         self._memory_system = InfinityMemorySystem()
 
     @property
-    def memory(self) -> "MemoryClient":
+    def memory(self) -> MemoryClient:
         return MemoryClient(self._memory_system)
 
 
@@ -26,17 +25,17 @@ class MemoryClient:
     async def create(
         self,
         content: str,
-        emotional_context: Dict[str, float] | None = None,
-        metadata: Dict[str, Any] | None = None,
-    ) -> Dict[str, Any]:
+        emotional_context: dict[str, float] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         return await self._memory_system.create_memory(content, emotional_context=emotional_context)
 
     async def recall(
         self,
         query: str,
-        filters: Dict[str, Any] | None = None,
+        filters: dict[str, Any] | None = None,
         limit: int = 5,
-    ) -> List[Any]:
+    ) -> list[Any]:
         return await self._memory_system.recall_memories(query, filters=filters, limit=limit)
 
 

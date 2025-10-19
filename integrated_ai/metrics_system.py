@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
 
 
 @dataclass
 class MetricsStore:
-    performance: Dict[str, float]
-    resource_usage: Dict[str, float]
+    performance: dict[str, float]
+    resource_usage: dict[str, float]
 
 
 class EmotionalIntelligenceMetrics:
@@ -63,12 +63,12 @@ class InfinityMetrics:
         self.cognitive_metrics = CognitiveDevelopmentMetrics()
         self.memory_metrics = MemoryEvolutionMetrics()
 
-    def collect_all_metrics(self) -> Dict[str, Any]:
+    def collect_all_metrics(self) -> dict[str, Any]:
         base = self.collect_base_metrics()
         infinity_specific = self.collect_infinity_metrics()
         return {**base, **infinity_specific}
 
-    def collect_base_metrics(self) -> Dict[str, Any]:
+    def collect_base_metrics(self) -> dict[str, Any]:
         return {
             "performance": {
                 "latency_ms": 120.0,
@@ -83,7 +83,7 @@ class InfinityMetrics:
             },
         }
 
-    def collect_infinity_metrics(self) -> Dict[str, Any]:
+    def collect_infinity_metrics(self) -> dict[str, Any]:
         return {
             "emotional_intelligence": {
                 "recognition_accuracy": self.emotional_metrics.measure_recognition_accuracy(),
@@ -105,7 +105,7 @@ class InfinityMetrics:
             },
         }
 
-    def create_dashboard(self) -> Dict[str, Any]:
+    def create_dashboard(self) -> dict[str, Any]:
         metrics = self.collect_all_metrics()
         return {
             "overall_health": self.calculate_overall_health(metrics),
@@ -115,7 +115,7 @@ class InfinityMetrics:
             "recommendations": self.generate_recommendations(metrics),
         }
 
-    def calculate_overall_health(self, metrics: Dict[str, Any]) -> float:
+    def calculate_overall_health(self, metrics: dict[str, Any]) -> float:
         weights = {
             "performance": 0.3,
             "emotional_intelligence": 0.25,
@@ -136,7 +136,7 @@ class InfinityMetrics:
             weight_sum += weight
         return round(total / weight_sum, 3) if weight_sum else 0.0
 
-    def assess_kpi_status(self, metrics: Dict[str, Any]) -> Dict[str, str]:
+    def assess_kpi_status(self, metrics: dict[str, Any]) -> dict[str, str]:
         status = {}
         emotional_depth = metrics["emotional_intelligence"]["emotional_depth"]
         status["emotional_depth"] = "green" if emotional_depth >= 0.7 else "yellow"
@@ -146,7 +146,7 @@ class InfinityMetrics:
         status["retrieval_accuracy"] = "green" if retrieval_accuracy >= 0.85 else "yellow"
         return status
 
-    def detect_anomalies(self, metrics: Dict[str, Any]) -> Dict[str, str]:
+    def detect_anomalies(self, metrics: dict[str, Any]) -> dict[str, str]:
         anomalies = {}
         if metrics["performance"]["error_rate"] > 0.05:
             anomalies["error_rate"] = "high"
@@ -154,10 +154,10 @@ class InfinityMetrics:
             anomalies["cpu"] = "sustained"
         return anomalies
 
-    def analyze_trends(self, metrics: Dict[str, Any]) -> Dict[str, str]:
+    def analyze_trends(self, metrics: dict[str, Any]) -> dict[str, str]:
         return {"emotional_depth": "up", "learning_efficiency": "steady"}
 
-    def generate_recommendations(self, metrics: Dict[str, Any]) -> Dict[str, str]:
+    def generate_recommendations(self, metrics: dict[str, Any]) -> dict[str, str]:
         recommendations = {}
         if metrics["resource_usage"]["memory_mb"] > 1024:
             recommendations["memory"] = "พิจารณาเพิ่มชั้น compression สำหรับ Infinity Memory"

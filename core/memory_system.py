@@ -10,26 +10,29 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 from prometheus_client import Counter, Gauge, Histogram
-
 
 LOGGER = logging.getLogger(__name__)
 
 
 MEMORY_CREATED = Counter(
-    "infinity_memory_created_total", "Total memories created",
+    "infinity_memory_created_total",
+    "Total memories created",
 )
 MEMORY_RECALLED = Counter(
-    "infinity_memory_recalled_total", "Total memory recalls",
+    "infinity_memory_recalled_total",
+    "Total memory recalls",
 )
 MEMORY_OPERATION_DURATION = Histogram(
-    "infinity_memory_operation_duration_seconds", "Memory operation duration",
+    "infinity_memory_operation_duration_seconds",
+    "Memory operation duration",
 )
 ACTIVE_MEMORIES = Gauge(
-    "infinity_active_memories", "Number of active memories",
+    "infinity_active_memories",
+    "Number of active memories",
 )
 
 
@@ -59,12 +62,12 @@ class EmotionalSpectrum:
     curiosity: float = 0.0
     awe: float = 0.0
 
-    def to_dict(self) -> Dict[str, float]:
+    def to_dict(self) -> dict[str, float]:
         """Return a dictionary with only active emotions."""
 
         return {k: v for k, v in asdict(self).items() if v > 0.0}
 
-    def get_dominant_emotion(self) -> Tuple[str, float]:
+    def get_dominant_emotion(self) -> tuple[str, float]:
         """Return the dominant emotion and its intensity."""
 
         emotions = self.to_dict()
@@ -81,9 +84,9 @@ class MemoryMetadata:
     timeline_id: str = "earth-616"
     importance: float = 50.0
     recall_count: int = 0
-    last_recalled: Optional[datetime] = None
+    last_recalled: datetime | None = None
     cosmic_signature: str = ""
-    conflict_group: Optional[str] = None
+    conflict_group: str | None = None
     source: str = "user_input"
     reliability_score: float = 0.8
     access_frequency: float = 1.0
@@ -97,9 +100,9 @@ class InfinityMemory:
         self,
         content: str,
         memory_type: MemoryType = MemoryType.SEMANTIC,
-        emotional_spectrum: Optional[EmotionalSpectrum] = None,
-        metadata: Optional[MemoryMetadata] = None,
-        embedding: Optional[np.ndarray] = None,
+        emotional_spectrum: EmotionalSpectrum | None = None,
+        metadata: MemoryMetadata | None = None,
+        embedding: np.ndarray | None = None,
     ) -> None:
         self.id = str(uuid.uuid4())
         self.content = content
@@ -109,12 +112,12 @@ class InfinityMemory:
         self.metadata = metadata or MemoryMetadata()
         self.embedding = embedding
 
-        self.emotion_intensity: Dict[str, float] = {}
-        self.emotion_tags: List[str] = []
-        self.emotion_shift_trace: List[Dict[str, Any]] = []
-        self.overlapping_memories: List[str] = []
+        self.emotion_intensity: dict[str, float] = {}
+        self.emotion_tags: list[str] = []
+        self.emotion_shift_trace: list[dict[str, Any]] = []
+        self.overlapping_memories: list[str] = []
         self.cognitive_reflection = ""
-        self.related_concepts: List[str] = []
+        self.related_concepts: list[str] = []
         self.psyche_evolution = {
             "pre_state": "",
             "post_state": "",
@@ -122,10 +125,10 @@ class InfinityMemory:
             "learning_points": [],
         }
 
-        self._cached_embedding: Optional[np.ndarray] = None
+        self._cached_embedding: np.ndarray | None = None
         self._last_accessed: datetime = datetime.now()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialise the memory to a JSON-compatible dictionary."""
 
         data = {
@@ -145,7 +148,7 @@ class InfinityMemory:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "InfinityMemory":
+    def from_dict(cls, data: dict[str, Any]) -> InfinityMemory:
         """Construct an :class:`InfinityMemory` from a dictionary."""
 
         memory = cls(
@@ -184,25 +187,26 @@ class QuantumEmotionTagger:
     """Toy emotion analysis engine supporting asynchronous execution."""
 
     async def analyze_emotions_async(
-        self, memory: InfinityMemory, emotional_context: Optional[Dict[str, float]]
+        self, memory: InfinityMemory, emotional_context: dict[str, float] | None
     ) -> InfinityMemory:
         context = emotional_context or {}
         intensities = {k: float(v) for k, v in context.items() if isinstance(v, (int, float))}
         dominant = max(intensities.items(), key=lambda item: item[1], default=("neutral", 0.0))
         memory.emotion_intensity = intensities
         memory.emotion_tags = [emotion for emotion, value in intensities.items() if value > 0.5]
-        memory.emotional_spectrum = EmotionalSpectrum(**{
-            key: intensities.get(key, 0.0)
-            for key in EmotionalSpectrum().__dict__.keys()
-        })
-        memory.cognitive_reflection = f"Dominant emotion detected: {dominant[0]} ({dominant[1]:.2f})"
+        memory.emotional_spectrum = EmotionalSpectrum(
+            **{key: intensities.get(key, 0.0) for key in EmotionalSpectrum().__dict__.keys()}
+        )
+        memory.cognitive_reflection = (
+            f"Dominant emotion detected: {dominant[0]} ({dominant[1]:.2f})"
+        )
         return memory
 
 
 class MemoryConflictResolver:
     """Simplified resolver that aggregates conflicting memories."""
 
-    async def resolve_conflicts_async(self, memories: List[InfinityMemory]) -> Dict[str, Any]:
+    async def resolve_conflicts_async(self, memories: list[InfinityMemory]) -> dict[str, Any]:
         if not memories:
             return {"status": "no_conflicts", "details": []}
         sorted_memories = sorted(
@@ -233,45 +237,45 @@ class InMemoryStorageBackend:
     """Default asynchronous storage backend based on an in-memory dictionary."""
 
     def __init__(self) -> None:
-        self._memories: Dict[str, Dict[str, Any]] = {}
+        self._memories: dict[str, dict[str, Any]] = {}
 
-    async def store_memory_async(self, memory: Dict[str, Any]) -> None:
+    async def store_memory_async(self, memory: dict[str, Any]) -> None:
         self._memories[memory["id"]] = memory
 
-    async def update_memory_async(self, memory: Dict[str, Any]) -> None:
+    async def update_memory_async(self, memory: dict[str, Any]) -> None:
         self._memories[memory["id"]] = memory
 
-    async def get_memory_async(self, memory_id: str) -> Optional[Dict[str, Any]]:
+    async def get_memory_async(self, memory_id: str) -> dict[str, Any] | None:
         return self._memories.get(memory_id)
 
     async def search_memories_async(
         self,
         query: str,
-        filters: Dict[str, Any],
+        filters: dict[str, Any],
         limit: int,
-    ) -> List[Dict[str, Any]]:
-        results: List[Dict[str, Any]] = []
+    ) -> list[dict[str, Any]]:
+        results: list[dict[str, Any]] = []
         lowered = query.lower()
         for memory in self._memories.values():
             if lowered in memory["content"].lower():
                 results.append(memory)
         return results[:limit]
 
-    async def all_memories_async(self) -> List[Dict[str, Any]]:
+    async def all_memories_async(self) -> list[dict[str, Any]]:
         return list(self._memories.values())
 
 
 class InfinityMemorySystem:
     """Coordinates memory creation, storage, and recall."""
 
-    def __init__(self, storage_backend: Any = None, config: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, storage_backend: Any = None, config: dict[str, Any] | None = None) -> None:
         self.storage = storage_backend or self._create_default_storage()
         self.emotion_tagger = QuantumEmotionTagger()
         self.conflict_resolver = MemoryConflictResolver()
         self.reliability_engine = MemoryReliabilityEngine()
         self.scaling_manager = MemoryScalingManager()
         self.config = config or {}
-        self.cache: Dict[str, Any] = {}
+        self.cache: dict[str, Any] = {}
         self.executor = ThreadPoolExecutor(max_workers=10)
         self.logger = LOGGER
         self.metrics = {
@@ -287,15 +291,17 @@ class InfinityMemorySystem:
     async def create_memory(
         self,
         content: str,
-        context: Optional[Dict[str, Any]] = None,
-        emotional_context: Optional[Dict[str, float]] = None,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any] | None = None,
+        emotional_context: dict[str, float] | None = None,
+    ) -> dict[str, Any]:
         start_time = datetime.now()
         ACTIVE_MEMORIES.inc()
         try:
             memory = InfinityMemory(content=content)
             memory = await self.emotion_tagger.analyze_emotions_async(memory, emotional_context)
-            reliability_score = await self.reliability_engine.calculate_reliability_score_async(memory)
+            reliability_score = await self.reliability_engine.calculate_reliability_score_async(
+                memory
+            )
             memory.metadata.reliability_score = reliability_score
             memory.metadata.importance = reliability_score * 100
             memory.metadata.cosmic_signature = self._generate_cosmic_signature(memory)
@@ -324,10 +330,10 @@ class InfinityMemorySystem:
     async def recall_memories(
         self,
         query: str,
-        filters: Optional[Dict[str, Any]] = None,
+        filters: dict[str, Any] | None = None,
         limit: int = 10,
         use_cache: bool = True,
-    ) -> List[InfinityMemory]:
+    ) -> list[InfinityMemory]:
         start_time = datetime.now()
         filters = filters or {}
         try:
@@ -340,7 +346,9 @@ class InfinityMemorySystem:
                     )
                     return cached_result["memories"]
 
-            raw_results = await self.storage.search_memories_async(query=query, filters=filters, limit=limit * 3)
+            raw_results = await self.storage.search_memories_async(
+                query=query, filters=filters, limit=limit * 3
+            )
             memories = await self._convert_to_memory_objects_async(raw_results)
             filtered_memories = await self._apply_advanced_filters_async(memories, filters)
             for memory in filtered_memories[:limit]:
@@ -362,21 +370,21 @@ class InfinityMemorySystem:
             self.logger.error("Error recalling memories: %s", exc)
             raise
 
-    async def resolve_memory_conflicts(self, memory_ids: List[str]) -> Dict[str, Any]:
+    async def resolve_memory_conflicts(self, memory_ids: list[str]) -> dict[str, Any]:
         memories_data = await asyncio.gather(
             *[self.storage.get_memory_async(memory_id) for memory_id in memory_ids]
         )
         memory_objects = [InfinityMemory.from_dict(data) for data in memories_data if data]
         return await self.conflict_resolver.resolve_conflicts_async(memory_objects)
 
-    async def scale_system(self, target_capacity: int) -> Dict[str, Any]:
+    async def scale_system(self, target_capacity: int) -> dict[str, Any]:
         return await self.scaling_manager.scale_memory_system(
             current_load=self.metrics["active_memories"],
             target_capacity=target_capacity,
             system_metrics=self.metrics,
         )
 
-    def get_system_metrics(self) -> Dict[str, Any]:
+    def get_system_metrics(self) -> dict[str, Any]:
         return {
             **self.metrics,
             "cache_size": len(self.cache),
@@ -399,7 +407,9 @@ class InfinityMemorySystem:
         self._cached_embedding = embedding
         return embedding
 
-    async def _convert_to_memory_objects_async(self, results: List[Dict[str, Any]]) -> List[InfinityMemory]:
+    async def _convert_to_memory_objects_async(
+        self, results: list[dict[str, Any]]
+    ) -> list[InfinityMemory]:
         loop = asyncio.get_event_loop()
         tasks = [
             loop.run_in_executor(self.executor, InfinityMemory.from_dict, result)
@@ -408,13 +418,13 @@ class InfinityMemorySystem:
         return await asyncio.gather(*tasks)
 
     async def _apply_advanced_filters_async(
-        self, memories: List[InfinityMemory], filters: Dict[str, Any]
-    ) -> List[InfinityMemory]:
+        self, memories: list[InfinityMemory], filters: dict[str, Any]
+    ) -> list[InfinityMemory]:
         min_reliability = float(filters.get("min_reliability", 0))
         required_emotions = set(filters.get("emotions", []))
         time_range = filters.get("time_range")
         now = datetime.now()
-        filtered: List[InfinityMemory] = []
+        filtered: list[InfinityMemory] = []
         for memory in memories:
             if memory.metadata.reliability_score < min_reliability:
                 continue
@@ -430,7 +440,7 @@ class InfinityMemorySystem:
 
     async def _update_overlapping_memories_async(self, memory: InfinityMemory) -> None:
         stored_memories = await self.storage.all_memories_async()
-        overlaps: List[str] = []
+        overlaps: list[str] = []
         for stored in stored_memories:
             if stored["id"] == memory.id:
                 continue
@@ -457,8 +467,8 @@ class MemoryScalingManager:
         self,
         current_load: int,
         target_capacity: int,
-        system_metrics: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        system_metrics: dict[str, Any],
+    ) -> dict[str, Any]:
         decision = self._analyze_scaling_needs(current_load, target_capacity, system_metrics)
         if not decision["needs_scaling"]:
             return {"status": "no_scaling_needed", "message": "System capacity is sufficient"}
@@ -466,8 +476,8 @@ class MemoryScalingManager:
         return await self.scaling_strategies[strategy](decision)
 
     def _analyze_scaling_needs(
-        self, current_load: int, target_capacity: int, metrics: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, current_load: int, target_capacity: int, metrics: dict[str, Any]
+    ) -> dict[str, Any]:
         capacity_ratio = current_load / target_capacity if target_capacity else 0
         performance_degradation = metrics.get("avg_processing_time", 0) > 1.0
         needs_scaling = capacity_ratio > 0.8 or performance_degradation
@@ -477,7 +487,9 @@ class MemoryScalingManager:
             "target_capacity": target_capacity,
             "capacity_ratio": capacity_ratio,
             "performance_issue": performance_degradation,
-            "recommended_strategy": self._select_scaling_strategy(capacity_ratio, performance_degradation),
+            "recommended_strategy": self._select_scaling_strategy(
+                capacity_ratio, performance_degradation
+            ),
         }
 
     def _select_scaling_strategy(self, capacity_ratio: float, performance_issue: bool) -> str:
@@ -487,13 +499,13 @@ class MemoryScalingManager:
             return "horizontal"
         return "vertical"
 
-    async def _scale_horizontally(self, decision: Dict[str, Any]) -> Dict[str, Any]:
+    async def _scale_horizontally(self, decision: dict[str, Any]) -> dict[str, Any]:
         return {"strategy": "horizontal", "status": "implemented", "details": decision}
 
-    async def _scale_vertically(self, decision: Dict[str, Any]) -> Dict[str, Any]:
+    async def _scale_vertically(self, decision: dict[str, Any]) -> dict[str, Any]:
         return {"strategy": "vertical", "status": "implemented", "details": decision}
 
-    async def _scale_with_sharding(self, decision: Dict[str, Any]) -> Dict[str, Any]:
+    async def _scale_with_sharding(self, decision: dict[str, Any]) -> dict[str, Any]:
         return {"strategy": "sharding", "status": "implemented", "details": decision}
 
 

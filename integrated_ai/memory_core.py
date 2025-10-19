@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .emotion_engine import EmotionGraph, QuantumEmotionTagger
 from .reflection import ReflectiveAI
@@ -42,19 +42,19 @@ class MemoryItem:
 
     id: str
     content: str
-    embedding: List[float]
+    embedding: list[float]
     memory_type: MemoryType
-    tags: List[str]
-    emotions: Dict[str, float]
+    tags: list[str]
+    emotions: dict[str, float]
     timeline_id: str = "earth-616"
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     decay_t: int = 14
-    conflict_group: Optional[str] = None
+    conflict_group: str | None = None
     source: str = "event/chat/system"
-    cosmic_signature: Optional[str] = None
+    cosmic_signature: str | None = None
     importance: float = 0.5
     recall_count: int = 0
-    last_recalled: Optional[datetime] = None
+    last_recalled: datetime | None = None
 
 
 @dataclass
@@ -75,18 +75,18 @@ class InfinityMemory:
     content: str
     timestamp: datetime
     emotional_spectrum: EmotionalSpectrum
-    emotion_intensity: Dict[str, float]
-    emotion_tag: List[str]
-    emotion_shift_trace: List[Dict[str, Any]]
+    emotion_intensity: dict[str, float]
+    emotion_tag: list[str]
+    emotion_shift_trace: list[dict[str, Any]]
     cognitive_reflection: str = ""
-    psyche_evolution: Dict[str, Any] = field(
+    psyche_evolution: dict[str, Any] = field(
         default_factory=lambda: {"pre_state": "", "post_state": "", "growth_vector": []}
     )
-    overlapping_memories: List[str] = field(default_factory=list)
+    overlapping_memories: list[str] = field(default_factory=list)
     cosmic_signature: str = ""
     recall_count: int = 0
     importance: float = 0.5
-    last_recalled: Optional[datetime] = None
+    last_recalled: datetime | None = None
 
 
 class InfinityMemorySystem:
@@ -97,13 +97,13 @@ class InfinityMemorySystem:
         self.connection = sqlite3.connect(self.db_path, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self._ensure_schema()
-        self.memory_db: Dict[str, InfinityMemory] = {}
+        self.memory_db: dict[str, InfinityMemory] = {}
         self.emotion_nexus = EmotionGraph()
         self.cognito_reflector = ReflectiveAI()
         self.quantum_tagger = QuantumEmotionTagger()
         self._load_from_storage()
 
-    def create_memory(self, content: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def create_memory(self, content: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
         memory_id = str(uuid.uuid4())
         memory = InfinityMemory(
             id=memory_id,
@@ -130,16 +130,18 @@ class InfinityMemorySystem:
             "emotional_profile": memory.emotion_intensity,
         }
 
-    def recall_memory(self, query: str, emotion_filter: Optional[str] = None, limit: int = 5) -> List[InfinityMemory]:
+    def recall_memory(
+        self, query: str, emotion_filter: str | None = None, limit: int = 5
+    ) -> list[InfinityMemory]:
         query_vector = self._convert_to_cosmic_vector(query)
-        candidates: List[tuple[InfinityMemory, float]] = []
+        candidates: list[tuple[InfinityMemory, float]] = []
         for memory in self.memory_db.values():
             relevance = self._calculate_relevance(memory, query_vector)
             if emotion_filter and memory.emotion_intensity.get(emotion_filter, 0.0) < 0.5:
                 continue
             candidates.append((memory, relevance))
         ranked = sorted(candidates, key=lambda item: item[1], reverse=True)[:limit]
-        results: List[InfinityMemory] = []
+        results: list[InfinityMemory] = []
         for memory, _ in ranked:
             memory.recall_count += 1
             memory.last_recalled = datetime.now(UTC)
@@ -149,31 +151,41 @@ class InfinityMemorySystem:
             results.append(memory)
         return results
 
-    def _convert_to_cosmic_vector(self, text: str) -> Dict[str, float]:
+    def _convert_to_cosmic_vector(self, text: str) -> dict[str, float]:
         tokens = [token for token in text.lower().split() if token]
         counts = Counter(tokens)
         total = float(sum(counts.values())) or 1.0
         return {token: freq / total for token, freq in counts.items()}
 
-    def _calculate_relevance(self, memory: InfinityMemory, query_vector: Dict[str, float]) -> float:
+    def _calculate_relevance(self, memory: InfinityMemory, query_vector: dict[str, float]) -> float:
         content_vector = self._convert_to_cosmic_vector(memory.content)
-        score = sum(content_vector.get(token, 0.0) * weight for token, weight in query_vector.items())
-        emotion_boost = sum(memory.emotion_intensity.values()) / max(len(memory.emotion_intensity) or 1, 1)
+        score = sum(
+            content_vector.get(token, 0.0) * weight for token, weight in query_vector.items()
+        )
+        emotion_boost = sum(memory.emotion_intensity.values()) / max(
+            len(memory.emotion_intensity) or 1, 1
+        )
         return round(score + emotion_boost * 0.1, 3)
 
-    def _generate_cosmic_signature(self, memory: InfinityMemory, context: Optional[Dict[str, Any]]) -> str:
+    def _generate_cosmic_signature(
+        self, memory: InfinityMemory, context: dict[str, Any] | None
+    ) -> str:
         context_seed = "|".join(f"{key}:{value}" for key, value in sorted((context or {}).items()))
-        payload = f"{memory.content}|{memory.emotion_tag}|{context_seed}|{memory.timestamp.isoformat()}"
+        payload = (
+            f"{memory.content}|{memory.emotion_tag}|{context_seed}|{memory.timestamp.isoformat()}"
+        )
         digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
         return f"cosmic::{memory.timestamp.year}::{digest}"
 
-    def _calculate_growth_vector(self, memory: InfinityMemory) -> List[float]:
+    def _calculate_growth_vector(self, memory: InfinityMemory) -> list[float]:
         base = sum(memory.emotion_intensity.values())
         diversity = len(memory.emotion_intensity)
         return [round(base, 3), round(diversity / 10.0, 3), round(memory.recall_count / 5.0, 3)]
 
     def _update_overlapping_memories(self, memory_id: str, memory: InfinityMemory) -> None:
-        overlaps = self.emotion_nexus.add_node(memory_id, memory.emotion_intensity, memory.timestamp)
+        overlaps = self.emotion_nexus.add_node(
+            memory_id, memory.emotion_intensity, memory.timestamp
+        )
         memory.overlapping_memories.extend(overlaps)
         self._update_overlap_field(memory)
 
@@ -183,7 +195,10 @@ class InfinityMemorySystem:
         return round(min(1.0, base + freshness * 0.3), 3)
 
     def _update_emotional_spectrum(self, memory: InfinityMemory) -> None:
-        spectrum_data = {field: memory.emotion_intensity.get(field, 0.0) for field in EmotionalSpectrum.__annotations__}
+        spectrum_data = {
+            field: memory.emotion_intensity.get(field, 0.0)
+            for field in EmotionalSpectrum.__annotations__
+        }
         memory.emotional_spectrum = EmotionalSpectrum(**spectrum_data)
 
     # ------------------------------------------------------------------
@@ -211,7 +226,7 @@ class InfinityMemorySystem:
         )
         self.connection.commit()
 
-    def _persist_memory(self, memory: InfinityMemory, context: Dict[str, Any]) -> None:
+    def _persist_memory(self, memory: InfinityMemory, context: dict[str, Any]) -> None:
         payload = {
             "id": memory.id,
             "content": memory.content,
@@ -301,8 +316,8 @@ class InfinityMemorySystem:
         memory.psyche_evolution["growth_vector"] = self._calculate_growth_vector(memory)
         return memory
 
-    def _serialise_shift_trace(self, trace: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        serialised: List[Dict[str, Any]] = []
+    def _serialise_shift_trace(self, trace: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        serialised: list[dict[str, Any]] = []
         for entry in trace:
             data = dict(entry)
             timestamp = data.get("timestamp")
@@ -311,8 +326,8 @@ class InfinityMemorySystem:
             serialised.append(data)
         return serialised
 
-    def _deserialise_shift_trace(self, trace: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        restored: List[Dict[str, Any]] = []
+    def _deserialise_shift_trace(self, trace: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        restored: list[dict[str, Any]] = []
         for entry in trace:
             data = dict(entry)
             timestamp = data.get("timestamp")
@@ -333,8 +348,8 @@ class InfinityMemorySystem:
         except Exception:
             pass
 
-    def export_ledger(self) -> List[MemoryItem]:
-        ledger: List[MemoryItem] = []
+    def export_ledger(self) -> list[MemoryItem]:
+        ledger: list[MemoryItem] = []
         for memory in self.memory_db.values():
             ledger.append(
                 MemoryItem(
@@ -352,7 +367,7 @@ class InfinityMemorySystem:
             )
         return ledger
 
-    def list_memories(self) -> List[InfinityMemory]:
+    def list_memories(self) -> list[InfinityMemory]:
         return list(self.memory_db.values())
 
     def __len__(self) -> int:  # pragma: no cover - trivial helper

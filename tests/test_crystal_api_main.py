@@ -1,9 +1,10 @@
-import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import MagicMock
-
 # Set the environment variable required by the app BEFORE importing the app
 import os
+from unittest.mock import MagicMock
+
+import pytest
+from fastapi.testclient import TestClient
+
 os.environ["GCP_PROJECT_ID"] = "test-project"
 
 # Import the app and the dependency function after setting the env var
@@ -25,6 +26,7 @@ def client(mock_memory_service):
     Fixture to create a TestClient with the get_memory_service dependency
     overridden to return our mock service.
     """
+
     # Define the override function
     def override_get_memory_service():
         yield mock_memory_service

@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException
-from core_modules.memory import FirestoreMemory
-from typing import List, Dict, Any
+from typing import Any
+
 import vertexai
+from fastapi import APIRouter, HTTPException
 from vertexai.generative_models import Content, GenerativeModel, Part
+
+from core_modules.memory import FirestoreMemory
 
 # --- Vertex AI Configuration ---
 PROJECT_ID = "arctic-signer-471822-i8"
@@ -15,13 +17,14 @@ vertexai.init(project=PROJECT_ID, location=LOCATION)
 
 router = APIRouter()
 
-def format_history_for_gemini(history: List[Dict[str, Any]]) -> List[Content]:
+
+def format_history_for_gemini(history: list[dict[str, Any]]) -> list[Content]:
     """
     Maps the role from our Firestore format ('user'/'ai') to the Gemini API format
     and converts each message into a ``Content`` instance.
     """
 
-    formatted_messages: List[Content] = []
+    formatted_messages: list[Content] = []
     for msg in history:
         role = msg.get("role")
         text = msg.get("content")
@@ -43,6 +46,7 @@ def format_history_for_gemini(history: List[Dict[str, Any]]) -> List[Content]:
 
     return formatted_messages
 
+
 # NOTE: The path is kept as /ollama/chat to avoid breaking the existing Custom GPT Action.
 # In the future, it would be good to rename this to /gemini/chat.
 @router.post("/ollama/chat")
@@ -53,7 +57,7 @@ def chat_with_gemini_and_memory(prompt: str, session_id: str):
     """
     try:
         # 1. Initialize memory
-        memory = FirestoreMemory(project_id='namo-legacy-identity')
+        memory = FirestoreMemory(project_id="namo-legacy-identity")
 
         # 2. Save the user's new message to Firestore
         memory.add_message(session_id=session_id, role="user", content=prompt)
@@ -61,7 +65,7 @@ def chat_with_gemini_and_memory(prompt: str, session_id: str):
         # 3. Retrieve the conversation history
         # We get the last 20 messages to keep the context window reasonable
         history = memory.get_messages(session_id=session_id, limit=20)
-        
+
         # 4. Format history for the Gemini API
         # The history from Firestore already includes the new prompt we just added.
         messages_for_gemini = format_history_for_gemini(history)
@@ -71,7 +75,7 @@ def chat_with_gemini_and_memory(prompt: str, session_id: str):
         # The Gemini API expects the history and the new prompt to be combined.
         # The last message in our list is the new user prompt.
         response = model.generate_content(messages_for_gemini)
-        
+
         assistant_message = response.text
 
         # 6. Save the assistant's reply to Firestore
@@ -82,4 +86,4 @@ def chat_with_gemini_and_memory(prompt: str, session_id: str):
 
     except Exception as e:
         # Broad exception handling for any errors from Vertex AI or other issues.
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}") from e

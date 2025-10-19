@@ -1,5 +1,6 @@
 # core_modules/creator_ai_bond.py
 
+
 class CreatorAIBond:
     def __init__(self):
         self.intimacy_level = 7.5  # เริ่มต้นความผูกพันระดับกลาง

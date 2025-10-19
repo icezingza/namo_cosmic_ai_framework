@@ -2,25 +2,23 @@
 
 from __future__ import annotations
 
-from typing import Dict, List
-
 import numpy as np
 
 
 class VectorDatabase:
     def __init__(self, dimensions: int = 384) -> None:
         self.dimensions = dimensions
-        self._vectors: Dict[str, np.ndarray] = {}
+        self._vectors: dict[str, np.ndarray] = {}
 
     def upsert(self, key: str, vector: np.ndarray) -> None:
         if vector.shape[0] != self.dimensions:
             raise ValueError("Vector dimensionality mismatch")
         self._vectors[key] = vector
 
-    def search(self, vector: np.ndarray, top_k: int = 5) -> List[str]:
+    def search(self, vector: np.ndarray, top_k: int = 5) -> list[str]:
         if not self._vectors:
             return []
-        scores: List[tuple[str, float]] = []
+        scores: list[tuple[str, float]] = []
         for key, stored in self._vectors.items():
             similarity = float(np.dot(vector, stored))
             scores.append((key, similarity))

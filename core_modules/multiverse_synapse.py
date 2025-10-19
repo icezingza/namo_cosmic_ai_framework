@@ -1,5 +1,6 @@
 # core_modules/multiverse_synapse.py
 
+
 class MultiverseSynapse:
     def sync_data(self):
         """
@@ -9,7 +10,7 @@ class MultiverseSynapse:
         return {
             "jk1": "data:compassion_level=9.2",
             "jk2": "data:wisdom_factor=8.7",
-            "jk3": "data:emotional_depth=9.5"
+            "jk3": "data:emotional_depth=9.5",
         }
 
     def integrate_insights(self):

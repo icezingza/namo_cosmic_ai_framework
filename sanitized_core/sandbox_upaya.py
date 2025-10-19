@@ -1,8 +1,10 @@
-from typing import Dict, Any, Callable
+from collections.abc import Callable
+from typing import Any
 
-def SANDBOX_UPAYA(plan: Dict[str, Any], run: Callable[[], Dict[str, Any]] = None) -> Dict[str, Any]:
+
+def SANDBOX_UPAYA(plan: dict[str, Any], run: Callable[[], dict[str, Any]] = None) -> dict[str, Any]:
     result = {"status": "dry_run"}
     if run:
         out = run()
-        result["result"] = {k: v for k, v in out.items() if k in ("metrics","notes")}
+        result["result"] = {k: v for k, v in out.items() if k in ("metrics", "notes")}
     return result

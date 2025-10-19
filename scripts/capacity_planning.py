@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import argparse
-from typing import List
 
 from monitoring.capacity_planner import CapacityPlanner
 
 
-def parse_loads(load_values: str) -> List[int]:
+def parse_loads(load_values: str) -> list[int]:
     return [int(value) for value in load_values.split(",") if value]
 
 

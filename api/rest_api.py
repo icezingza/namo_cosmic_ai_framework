@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from core import InfinityMemorySystem
@@ -15,16 +15,18 @@ memory_system = InfinityMemorySystem()
 
 class MemoryRequest(BaseModel):
     content: str
-    emotional_context: Dict[str, float] | None = None
+    emotional_context: dict[str, float] | None = None
 
 
 @app.post("/memory")
-async def create_memory(request: MemoryRequest) -> Dict[str, Any]:
-    return await memory_system.create_memory(request.content, emotional_context=request.emotional_context)
+async def create_memory(request: MemoryRequest) -> dict[str, Any]:
+    return await memory_system.create_memory(
+        request.content, emotional_context=request.emotional_context
+    )
 
 
 @app.get("/memory")
-async def recall_memory(query: str) -> Dict[str, Any]:
+async def recall_memory(query: str) -> dict[str, Any]:
     memories = await memory_system.recall_memories(query)
     if not memories:
         raise HTTPException(status_code=404, detail="Memory not found")
@@ -32,5 +34,5 @@ async def recall_memory(query: str) -> Dict[str, Any]:
 
 
 @app.get("/system/health")
-async def system_health() -> Dict[str, Any]:
+async def system_health() -> dict[str, Any]:
     return {"status": "ok", "metrics": memory_system.get_system_metrics()}

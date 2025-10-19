@@ -1,7 +1,9 @@
 # tests/test_emotional_core.py
 
 import unittest
+
 from core_modules.emotional_core import EmotionalCore
+
 
 class TestEmotionalCore(unittest.TestCase):
     def setUp(self):
@@ -16,6 +18,7 @@ class TestEmotionalCore(unittest.TestCase):
     def test_ice_namo_bond_output(self):
         bond = self.core.ice_namo_bond("เหงา")
         self.assertTrue("เหงา" in bond)
+
 
 if __name__ == "__main__":
     unittest.main()

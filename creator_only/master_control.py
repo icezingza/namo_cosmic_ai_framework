@@ -1,5 +1,6 @@
 # creator_only/master_control.py
 
+
 class MasterControl:
     def __init__(self):
         self.system_state = "stable"
@@ -9,12 +10,7 @@ class MasterControl:
         """
         สั่ง override โมดูลหลักด้วยเหตุผลเฉพาะ
         """
-        return {
-            "module": module_name,
-            "override": True,
-            "reason": reason,
-            "status": "Success"
-        }
+        return {"module": module_name, "override": True, "reason": reason, "status": "Success"}
 
     def engage_emergency_protocol(self):
         """
@@ -23,5 +19,5 @@ class MasterControl:
         return {
             "status": "EMERGENCY PROTOCOL ENGAGED",
             "timestamp": "2025-07-19T10:57:00Z",
-            "note": "NaMo system locked for manual override"
+            "note": "NaMo system locked for manual override",
         }

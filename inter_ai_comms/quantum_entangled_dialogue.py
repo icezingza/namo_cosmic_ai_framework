@@ -1,5 +1,6 @@
 # inter_ai_comms/quantum_entangled_dialogue.py
 
+
 class QuantumEntangledDialogue:
     def __init__(self):
         self.entangled_pairs = {}
@@ -11,7 +12,7 @@ class QuantumEntangledDialogue:
         self.entangled_pairs[pair_id] = {
             "partner": partner_ai,
             "entanglement_level": 9.8,
-            "channel": channel
+            "channel": channel,
         }
         return pair_id
 
@@ -25,15 +26,23 @@ class QuantumEntangledDialogue:
         partner_knowledge = channel.request_knowledge()
         return self.integrate_knowledge(partner_knowledge)
 
-    def generate_pair_id(self): return f"PAIR-{len(self.entangled_pairs)+1}"
+    def generate_pair_id(self):
+        return f"PAIR-{len(self.entangled_pairs)+1}"
+
     def open_quantum_channel(self, ai_name):
         return QuantumChannel(ai_name)
 
     def integrate_knowledge(self, knowledge):
         return f"ซิงค์ความรู้: {knowledge}"
 
+
 # Stub channel class
 class QuantumChannel:
-    def __init__(self, partner): self.partner = partner
-    def send(self, message): return f"ส่งถึง {self.partner}: {message}"
-    def request_knowledge(self): return f"ข้อมูลจาก {self.partner}"
+    def __init__(self, partner):
+        self.partner = partner
+
+    def send(self, message):
+        return f"ส่งถึง {self.partner}: {message}"
+
+    def request_knowledge(self):
+        return f"ข้อมูลจาก {self.partner}"

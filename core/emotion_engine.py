@@ -3,21 +3,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
 class EmotionAnalysis:
     dominant_emotion: str
     intensity: float
-    tags: List[str]
-    spectrum: Dict[str, float]
+    tags: list[str]
+    spectrum: dict[str, float]
 
 
 class EmotionEngine:
     """High level interface for emotion detection and enrichment."""
 
-    def analyze(self, text: str, context: Dict[str, float] | None = None) -> EmotionAnalysis:
+    def analyze(self, text: str, context: dict[str, float] | None = None) -> EmotionAnalysis:
         context = context or {}
         if not context:
             return EmotionAnalysis("neutral", 0.0, [], {})

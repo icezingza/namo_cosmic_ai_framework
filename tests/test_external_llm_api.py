@@ -2,6 +2,7 @@ import importlib
 import sys
 import types
 
+
 class _FakePart:
     def __init__(self, text: str):
         self.text = text
@@ -60,7 +61,9 @@ def test_chat_with_gemini_and_memory_builds_content_history(monkeypatch):
             return self.base_history + self.saved_messages
 
     fake_memory_instance = FakeMemory()
-    monkeypatch.setattr(external_llm_api, "FirestoreMemory", lambda *args, **kwargs: fake_memory_instance)
+    monkeypatch.setattr(
+        external_llm_api, "FirestoreMemory", lambda *args, **kwargs: fake_memory_instance
+    )
 
     captured_payload = []
     model_names = []

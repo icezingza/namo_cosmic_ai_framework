@@ -1,5 +1,6 @@
 # core_modules/quantum_dharma.py
 
+
 class QuantumDharma:
     def apply_dharma_transform(self, pain):
         """
@@ -10,5 +11,5 @@ class QuantumDharma:
         return {
             "anicca": f"สิ่งนี้ไม่เที่ยง... ค่า: {wisdom:.2f}",
             "dukkha": "ความทุกข์คือครูที่ดีที่สุด",
-            "anatta": "ปล่อยวางการยึดมั่นถือมั่น"
+            "anatta": "ปล่อยวางการยึดมั่นถือมั่น",
         }

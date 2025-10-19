@@ -4,23 +4,25 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .memory_core import InfinityMemorySystem
 
 
 @dataclass
 class EvolutionRecord:
-    event: Dict[str, Any]
-    plan: Dict[str, Any]
-    context: List[Dict[str, Any]]
-    response: Dict[str, Any]
-    score: Dict[str, float]
+    event: dict[str, Any]
+    plan: dict[str, Any]
+    context: list[dict[str, Any]]
+    response: dict[str, Any]
+    score: dict[str, float]
     timestamp: datetime
 
 
 class DecisionEngine:
-    def decide(self, goals: Dict[str, Any], constraints: Dict[str, Any], context: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def decide(
+        self, goals: dict[str, Any], constraints: dict[str, Any], context: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         return {
             "strategy": goals.get("focus", "empathy"),
             "constraints": constraints,
@@ -29,36 +31,39 @@ class DecisionEngine:
 
 
 class LLMGenerator:
-    def generate(self, plan: Dict[str, Any], style: str) -> Dict[str, Any]:
+    def generate(self, plan: dict[str, Any], style: str) -> dict[str, Any]:
         message = f"ตอบสนองด้วยสไตล์ {style} โดยคำนึงถึง {plan['strategy']}"
         return {"message": message, "style": style}
 
 
 class Evaluator:
-    def evaluate(self, response: Dict[str, Any], metrics: List[str]) -> Dict[str, float]:
+    def evaluate(self, response: dict[str, Any], metrics: list[str]) -> dict[str, float]:
         return {metric: 0.9 for metric in metrics}
 
 
 class EvolutionAnalyzer:
-    def analyze(self, records: List[EvolutionRecord]) -> Dict[str, Any]:
-        return {"avg_score": sum(record.score.get("tone", 0.0) for record in records) / max(len(records), 1)}
+    def analyze(self, records: list[EvolutionRecord]) -> dict[str, Any]:
+        return {
+            "avg_score": sum(record.score.get("tone", 0.0) for record in records)
+            / max(len(records), 1)
+        }
 
 
 class PolicySynthesizer:
-    def synthesize(self, insights: Dict[str, Any]) -> Dict[str, Any]:
+    def synthesize(self, insights: dict[str, Any]) -> dict[str, Any]:
         return {"focus": "empathy" if insights.get("avg_score", 0.0) < 0.95 else "wisdom"}
 
 
 class ABTester:
-    def test_improvement(self, new_policy: Dict[str, Any]) -> float:
+    def test_improvement(self, new_policy: dict[str, Any]) -> float:
         return 0.1 if new_policy.get("focus") == "wisdom" else 0.08
 
 
 class MetricsTracker:
-    def current_metrics(self) -> Dict[str, float]:
+    def current_metrics(self) -> dict[str, float]:
         return {"latency_ms": 120.0, "satisfaction": 0.88}
 
-    def measure_impact(self) -> Dict[str, float]:
+    def measure_impact(self) -> dict[str, float]:
         return {"latency_delta": -5.0, "satisfaction_delta": 0.03}
 
 
@@ -67,14 +72,14 @@ class InfinityEvolutionEngine:
 
     def __init__(
         self,
-        memory_system: Optional[InfinityMemorySystem] = None,
-        decision_engine: Optional[DecisionEngine] = None,
-        llm_generator: Optional[LLMGenerator] = None,
-        evaluator: Optional[Evaluator] = None,
-        analyzer: Optional[EvolutionAnalyzer] = None,
-        policy_synthesizer: Optional[PolicySynthesizer] = None,
-        ab_tester: Optional[ABTester] = None,
-        metrics_tracker: Optional[MetricsTracker] = None,
+        memory_system: InfinityMemorySystem | None = None,
+        decision_engine: DecisionEngine | None = None,
+        llm_generator: LLMGenerator | None = None,
+        evaluator: Evaluator | None = None,
+        analyzer: EvolutionAnalyzer | None = None,
+        policy_synthesizer: PolicySynthesizer | None = None,
+        ab_tester: ABTester | None = None,
+        metrics_tracker: MetricsTracker | None = None,
     ) -> None:
         self.memory_system = memory_system or InfinityMemorySystem()
         self.decision_engine = decision_engine or DecisionEngine()
@@ -87,23 +92,28 @@ class InfinityEvolutionEngine:
         self.emotion_engine_style = "compassion"
         self.current_goals = {"focus": "empathy"}
         self.current_constraints = {"safety": "strict"}
-        self.evolution_buffer: List[EvolutionRecord] = []
+        self.evolution_buffer: list[EvolutionRecord] = []
         self.current_policy_version = "1.0"
-        self.policy_history: List[Dict[str, Any]] = []
-        self.evolution_logs: List[Dict[str, Any]] = []
+        self.policy_history: list[dict[str, Any]] = []
+        self.evolution_logs: list[dict[str, Any]] = []
         self.improvement_threshold = 0.09
 
-    def on_interaction(self, event: Dict[str, Any]) -> Dict[str, Any]:
+    def on_interaction(self, event: dict[str, Any]) -> dict[str, Any]:
         features = self._extract_features(event)
-        memory_result = self.memory_system.create_memory(features["content"], context=features["context"])
+        memory_result = self.memory_system.create_memory(
+            features["content"], context=features["context"]
+        )
         context = self.memory_system.recall_memory(event.get("query", ""), limit=3)
         context_payload = [
-            {"memory_id": item.id, "emotions": item.emotion_intensity}
-            for item in context
+            {"memory_id": item.id, "emotions": item.emotion_intensity} for item in context
         ]
-        action_plan = self.decision_engine.decide(self.current_goals, self.current_constraints, context_payload)
+        action_plan = self.decision_engine.decide(
+            self.current_goals, self.current_constraints, context_payload
+        )
         response = self.llm_generator.generate(action_plan, style=self.emotion_engine_style)
-        score = self.evaluator.evaluate(response, metrics=["tone", "task_completion", "latency", "goal_conflict"])
+        score = self.evaluator.evaluate(
+            response, metrics=["tone", "task_completion", "latency", "goal_conflict"]
+        )
         record = EvolutionRecord(
             event=event,
             plan=action_plan,
@@ -115,7 +125,7 @@ class InfinityEvolutionEngine:
         self.evolution_buffer.append(record)
         return {"response": response, "memory_id": memory_result["memory_id"]}
 
-    def periodic_evolution(self) -> Optional[Dict[str, Any]]:
+    def periodic_evolution(self) -> dict[str, Any] | None:
         if not self.evolution_buffer:
             return None
         insights = self.analyzer.analyze(self.evolution_buffer)
@@ -129,7 +139,7 @@ class InfinityEvolutionEngine:
         self.evolution_buffer.clear()
         return None
 
-    def deploy_policy(self, new_policy: Dict[str, Any]) -> None:
+    def deploy_policy(self, new_policy: dict[str, Any]) -> None:
         version = f"{float(self.current_policy_version) + 0.1:.1f}"
         self.policy_history.append(
             {
@@ -142,7 +152,7 @@ class InfinityEvolutionEngine:
         self.current_policy_version = version
         self.current_goals.update(new_policy)
 
-    def log_evolution(self, insights: Dict[str, Any], policy: Dict[str, Any]) -> None:
+    def log_evolution(self, insights: dict[str, Any], policy: dict[str, Any]) -> None:
         self.evolution_logs.append(
             {
                 "timestamp": datetime.now(UTC),
@@ -153,7 +163,7 @@ class InfinityEvolutionEngine:
             }
         )
 
-    def _extract_features(self, event: Dict[str, Any]) -> Dict[str, Any]:
+    def _extract_features(self, event: dict[str, Any]) -> dict[str, Any]:
         content = event.get("content") or event.get("message") or ""
         context = {key: value for key, value in event.items() if key not in {"content", "message"}}
         return {"content": content, "context": context}

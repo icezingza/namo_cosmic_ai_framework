@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Sequence
+from typing import Any
 
 from .memory_core import InfinityMemory
 
@@ -21,24 +22,26 @@ class TurningPoint:
 class DharmaReasoningModule:
     """Provide Dharma-grounded insights for a collection of memories."""
 
-    def generate_reflection(self, memory: InfinityMemory, related_memories: Sequence[InfinityMemory]) -> str:
+    def generate_reflection(
+        self, memory: InfinityMemory, related_memories: Sequence[InfinityMemory]
+    ) -> str:
         emotional_patterns = self._analyze_emotional_patterns([memory, *related_memories])
         turning_points = self._identify_turning_points([memory, *related_memories])
         insight = self._apply_dharma_principles(memory, emotional_patterns, turning_points)
         return insight
 
-    def _analyze_emotional_patterns(self, memories: Iterable[InfinityMemory]) -> Dict[str, Any]:
-        aggregate: Dict[str, float] = {}
+    def _analyze_emotional_patterns(self, memories: Iterable[InfinityMemory]) -> dict[str, Any]:
+        aggregate: dict[str, float] = {}
         for memory in memories:
             for emotion, intensity in memory.emotion_intensity.items():
                 aggregate[emotion] = aggregate.get(emotion, 0.0) + intensity
         dominant = dict(sorted(aggregate.items(), key=lambda item: item[1], reverse=True)[:3])
         return {"dominant_emotions": dominant}
 
-    def _identify_turning_points(self, memories: Iterable[InfinityMemory]) -> List[TurningPoint]:
+    def _identify_turning_points(self, memories: Iterable[InfinityMemory]) -> list[TurningPoint]:
         ordered = sorted(memories, key=lambda mem: mem.timestamp)
-        points: List[TurningPoint] = []
-        for previous, current in zip(ordered, ordered[1:]):
+        points: list[TurningPoint] = []
+        for previous, current in zip(ordered, ordered[1:], strict=False):
             shift = self._calculate_emotional_shift(previous, current)
             if shift > 0.5:
                 points.append(
@@ -52,7 +55,9 @@ class DharmaReasoningModule:
                 )
         return points
 
-    def _calculate_emotional_shift(self, previous: InfinityMemory, current: InfinityMemory) -> float:
+    def _calculate_emotional_shift(
+        self, previous: InfinityMemory, current: InfinityMemory
+    ) -> float:
         previous_emotions = previous.emotion_intensity
         current_emotions = current.emotion_intensity
         total_shift = 0.0
@@ -62,12 +67,17 @@ class DharmaReasoningModule:
         return round(total_shift / max(len(keys) or 1, 1), 3)
 
     def _apply_dharma_principles(
-        self, memory: InfinityMemory, patterns: Dict[str, Any], turning_points: Sequence[TurningPoint]
+        self,
+        memory: InfinityMemory,
+        patterns: dict[str, Any],
+        turning_points: Sequence[TurningPoint],
     ) -> str:
         dominant = patterns.get("dominant_emotions", {})
         summary_lines = [f"การวิเคราะห์ความทรงจำ {memory.id} ผ่านหลักธรรม:"]
         if dominant:
-            joined = ", ".join(f"{emotion}:{intensity:.2f}" for emotion, intensity in dominant.items())
+            joined = ", ".join(
+                f"{emotion}:{intensity:.2f}" for emotion, intensity in dominant.items()
+            )
             summary_lines.append(f"- อารมณ์เด่น: {joined}")
         if any(emotion in ("sorrow", "rage") for emotion in dominant):
             summary_lines.append("- ตามหลักอนิจจัง ทุกอารมณ์ล้วนผันแปร จงรู้เท่าทัน")

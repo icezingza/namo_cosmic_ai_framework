@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
@@ -14,7 +13,7 @@ class CapacityPlan:
 
 
 class CapacityPlanner:
-    def plan(self, historical_load: List[int]) -> CapacityPlan:
+    def plan(self, historical_load: list[int]) -> CapacityPlan:
         if not historical_load:
             return CapacityPlan(0, 1, "No data; default plan")
         peak = max(historical_load)

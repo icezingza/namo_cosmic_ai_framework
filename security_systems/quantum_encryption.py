@@ -2,6 +2,7 @@
 
 import hashlib
 
+
 class QuantumEncryption:
     def encrypt(self, data):
         """
