@@ -21,6 +21,7 @@ uvicorn>=0.15.0
 websockets>=10.0
 pydantic>=1.8.0
 gunicorn>=20.0.0
+fastapi>=0.68.0
 
 # Monitoring & Observability
 prometheus-client>=0.12.0
